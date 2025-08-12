@@ -1,6 +1,7 @@
 "use client"
 
-import { useFormState, useFormStatus } from "react-dom"
+import { useFormStatus } from "react-dom"
+import { useActionState } from "react"
 import { Loader2, Search } from "lucide-react"
 import * as React from "react"
 
@@ -34,7 +35,7 @@ function SubmitButton() {
 }
 
 export function SearchForm() {
-  const [state, formAction] = useFormState(searchByVoterNumber, initialState)
+  const [state, formAction] = useActionState(searchByVoterNumber, initialState)
   const { toast } = useToast()
   const formRef = React.useRef<HTMLFormElement>(null)
   const prevIdRef = React.useRef<number | undefined>();
