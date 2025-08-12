@@ -29,6 +29,26 @@ const prompt = ai.definePrompt({
   input: {schema: SuggestTopicInputSchema},
   output: {schema: SuggestTopicOutputSchema},
   prompt: `You are a helpful assistant. Write a short, engaging paragraph about the following topic: {{{topic}}}`,
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_NONE',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  },
 });
 
 const suggestTopicFlow = ai.defineFlow(
