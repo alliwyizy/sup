@@ -40,3 +40,10 @@ export async function findSupporterByVoterNumber(voterNumber: string): Promise<S
   const supporter = supporters.find(s => s.voterNumber === voterNumber);
   return supporter;
 }
+
+export async function addSupporter(supporter: Supporter): Promise<Supporter> {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  supporters.push(supporter);
+  return supporter;
+}
