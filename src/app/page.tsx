@@ -17,7 +17,7 @@ export default function Home() {
               قاعدة بيانات مؤيدي الاستاذ عبدالرحمن اللويزي
             </CardTitle>
             <CardDescription className="pt-2">
-              للتأكد من وجود بياناتك، يرجى إدخال رقم الناخب الخاص بك والضغط على زر البحث.
+              للتأكد من وجود بياناتك في قاعدة البيانات، يرجى إدخال رقم الناخب الخاص بك والضغط على زر البحث.
             </CardDescription>
           </CardHeader>
           <CardContent>
