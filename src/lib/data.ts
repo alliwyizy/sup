@@ -208,14 +208,21 @@ export async function rejectSupporter(voterNumber: string): Promise<void> {
     pendingSupporters.splice(supporterIndex, 1);
 }
 
-export async function getAllSupporters(): Promise<Supporter[]> {
+export async function getAllSupporters(): Promise<(Supporter & { referrerName?: string })[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
-    return [...supporters];
+    return supporters.map(s => {
+        const referrer = s.referrerId ? supporters.find(r => r.voterNumber === s.referrerId) : undefined;
+        return { ...s, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
+    });
 }
 
 export async function getReferrers(): Promise<Supporter[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
-    return supporters.filter(s => s.isReferrer);
+    const referrers = supporters.filter(s => s.isReferrer);
+    return referrers.map(s => {
+        const referrer = s.referrerId ? supporters.find(r => r.voterNumber === s.referrerId) : undefined;
+        return { ...s, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
+    });
 }
 
 export async function toggleReferrerStatus(voterNumber: string): Promise<{ supporter: Supporter; isNowReferrer: boolean }> {
