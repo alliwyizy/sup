@@ -12,7 +12,7 @@ export default async function RequestsPage() {
   const pendingSupporters = await getPendingSupporters();
 
   return (
-    <div className="w-full max-w-5xl">
+    <div className="w-full max-w-6xl">
         <Card className="shadow-lg">
         <CardHeader className="text-center">
             <CardTitle className="font-headline text-2xl tracking-tight">

@@ -25,7 +25,10 @@ export default function AdminLayout({
       <div className="flex min-h-screen w-full">
         <Sidebar>
           <SidebarHeader>
-            <h2 className="text-lg font-semibold px-2">لوحة الإدارة</h2>
+            <div className="flex items-center gap-2">
+                 <SidebarTrigger className="md:hidden" />
+                 <h2 className="text-lg font-semibold px-2 hidden md:block">لوحة الإدارة</h2>
+            </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
@@ -61,8 +64,8 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-            <main className="flex flex-1 flex-col items-center justify-center p-4 lg:p-8">
-                 <div className="absolute top-4 left-4">
+            <main className="flex flex-1 flex-col items-center p-4 lg:p-8">
+                 <div className="absolute top-4 right-4 md:hidden">
                     <SidebarTrigger />
                 </div>
                 {children}

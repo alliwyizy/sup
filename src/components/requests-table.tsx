@@ -16,45 +16,38 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { approveSupporter, rejectSupporter, type RequestActionState } from "@/lib/actions";
 import type { Supporter } from "@/lib/data";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface ActionButtonProps extends React.ComponentProps<typeof Button> {
-  action: (voterNumber: string) => Promise<RequestActionState>;
-  voterNumber: string;
-  icon: React.ReactNode;
-}
-
-function ActionButton({ action, voterNumber, icon, ...props }: ActionButtonProps) {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      size="sm"
-      variant="ghost"
-      disabled={pending}
-      formAction={async () => {
-        await action(voterNumber);
-      }}
-      {...props}
-    >
-      {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
-    </Button>
-  );
-}
 
 export function RequestsTable({ data }: { data: Supporter[] }) {
   const { toast } = useToast();
 
-  const handleAction = async (
-    action: (voterNumber: string) => Promise<RequestActionState>,
-    voterNumber: string
-  ) => {
-    const result = await action(voterNumber);
-    if (result.error) {
-      toast({ variant: "destructive", title: "خطأ", description: result.error });
-    }
-    if (result.message) {
-      toast({ title: "نجاح", description: result.message });
-    }
-  };
+  const handleAction = React.useCallback(
+    async (
+      action: (voterNumber: string) => Promise<RequestActionState>,
+      voterNumber: string
+    ) => {
+      const result = await action(voterNumber);
+      if (result.error) {
+        toast({ variant: "destructive", title: "خطأ", description: result.error });
+      }
+      if (result.message) {
+        toast({ title: "نجاح", description: result.message });
+      }
+    },
+    [toast]
+  );
+  
+  // Create a memoized version of the action handler to avoid re-creating the function on every render.
+  const memoizedApprove = React.useCallback(
+    (voterNumber: string) => handleAction(approveSupporter, voterNumber),
+    [handleAction]
+  );
+  const memoizedReject = React.useCallback(
+    (voterNumber: string) => handleAction(rejectSupporter, voterNumber),
+    [handleAction]
+  );
+
 
   if (data.length === 0) {
     return (
@@ -65,69 +58,68 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="w-full overflow-x-auto rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>الاسم الكامل</TableHead>
-            <TableHead>رقم الناخب</TableHead>
-            <TableHead>التحصيل الدراسي</TableHead>
-            <TableHead>مركز التسجيل</TableHead>
+            <TableHead className="hidden sm:table-cell">رقم الناخب</TableHead>
+            <TableHead className="hidden lg:table-cell">التحصيل الدراسي</TableHead>
+            <TableHead className="hidden md:table-cell">مركز التسجيل</TableHead>
             <TableHead className="text-center">الإجراءات</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((supporter) => (
-            <TableRow key={supporter.voterNumber}>
-              <TableCell>
-                {supporter.name} {supporter.surname}
+             <TableRow key={supporter.voterNumber}>
+              <TableCell className="font-medium">
+                <div className="flex flex-col">
+                  <span>{supporter.name} {supporter.surname}</span>
+                  <span className="text-xs text-muted-foreground sm:hidden">
+                    {supporter.voterNumber}
+                  </span>
+                </div>
               </TableCell>
-              <TableCell>{supporter.voterNumber}</TableCell>
-              <TableCell>{supporter.educationalAttainment}</TableCell>
-              <TableCell>{supporter.registrationCenter}</TableCell>
+              <TableCell className="hidden sm:table-cell">{supporter.voterNumber}</TableCell>
+              <TableCell className="hidden lg:table-cell">{supporter.educationalAttainment}</TableCell>
+              <TableCell className="hidden md:table-cell">{supporter.registrationCenter}</TableCell>
               <TableCell className="text-center">
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const actionType = formData.get("action") as string;
-                    if (actionType === "approve") {
-                      await handleAction(approveSupporter, supporter.voterNumber);
-                    } else if (actionType === "reject") {
-                      await handleAction(rejectSupporter, supporter.voterNumber);
-                    }
-                  }}
-                  className="flex justify-center gap-2"
-                >
-                  <button type="submit" name="action" value="approve">
-                     <TooltipProvider>
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                            <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700">
-                                <Check className="h-4 w-4" />
-                            </Button>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <p>موافقة</p>
-                         </TooltipContent>
-                       </Tooltip>
-                     </TooltipProvider>
-                  </button>
-                   <button type="submit" name="action" value="reject">
-                     <TooltipProvider>
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                            <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700">
-                                <X className="h-4 w-4" />
-                            </Button>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <p>رفض</p>
-                         </TooltipContent>
-                       </Tooltip>
-                     </TooltipProvider>
-                  </button>
-                </form>
+                 <form className="flex justify-center gap-1 sm:gap-2">
+                   <TooltipProvider>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <Button
+                           size="sm"
+                           variant="ghost"
+                           className="text-green-600 hover:text-green-700"
+                           formAction={() => memoizedApprove(supporter.voterNumber)}
+                         >
+                           <Check className="h-4 w-4" />
+                         </Button>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>موافقة</p>
+                       </TooltipContent>
+                     </Tooltip>
+                   </TooltipProvider>
+                   <TooltipProvider>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <Button
+                           size="sm"
+                           variant="ghost"
+                           className="text-red-600 hover:text-red-700"
+                           formAction={() => memoizedReject(supporter.voterNumber)}
+                         >
+                           <X className="h-4 w-4" />
+                         </Button>
+                       </TooltipTrigger>
+                       <TooltipContent>
+                         <p>رفض</p>
+                       </TooltipContent>
+                     </Tooltip>
+                   </TooltipProvider>
+                 </form>
               </TableCell>
             </TableRow>
           ))}
@@ -136,6 +128,3 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
     </div>
   );
 }
-
-// These imports are needed for the Tooltip components
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
