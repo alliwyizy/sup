@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useFormStatus, useFormState } from "react-dom";
+import { useFormStatus } from "react-dom";
+import { useActionState } from "react";
 import { Loader2, SearchCheck } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
@@ -43,7 +44,7 @@ interface VoterCheckFormProps {
 }
 
 export function VoterCheckForm({ onSuccess, onVoterExists, initialError }: VoterCheckFormProps) {
-  const [state, formAction] = useFormState(checkVoter, { ...initialState, error: initialError });
+  const [state, formAction] = useActionState(checkVoter, { ...initialState, error: initialError });
 
   React.useEffect(() => {
     if (state.success && state.voterNumber) {
