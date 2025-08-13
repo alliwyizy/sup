@@ -19,8 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-
 
 const initialState: SupporterRequestState = {
   message: null,
@@ -85,17 +83,16 @@ export function JoinForm() {
           <Input id="age" name="age" type="number" required className="text-right" />
         </div>
          <div className="space-y-2">
-          <Label>الجنس</Label>
-          <RadioGroup dir="rtl" name="gender" className="flex gap-4" defaultValue="ذكر">
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <RadioGroupItem value="ذكر" id="male-join" />
-              <Label htmlFor="male-join">ذكر</Label>
-            </div>
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <RadioGroupItem value="انثى" id="female-join" />
-              <Label htmlFor="female-join">انثى</Label>
-            </div>
-          </RadioGroup>
+            <Label htmlFor="gender-join">الجنس</Label>
+            <Select name="gender" required defaultValue="ذكر">
+                <SelectTrigger id="gender-join">
+                <SelectValue placeholder="اختر الجنس" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="ذكر">ذكر</SelectItem>
+                <SelectItem value="انثى">انثى</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="phoneNumber">رقم الهاتف</Label>
