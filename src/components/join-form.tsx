@@ -45,7 +45,13 @@ function SubmitButton() {
   )
 }
 
-export function JoinForm({ voterNumber }: { voterNumber: string }) {
+interface JoinFormProps {
+    voterNumber: string;
+    prefilledData: Partial<Supporter> | null;
+}
+
+
+export function JoinForm({ voterNumber, prefilledData }: JoinFormProps) {
   const [state, formAction] = useActionState(submitSupporterRequest, initialState)
   const [referrers, setReferrers] = React.useState<Supporter[]>([]);
   const { toast } = useToast()
@@ -85,23 +91,23 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
       <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
          <div className="space-y-2 md:col-span-2">
             <Label htmlFor="voterNumber">رقم الناخب</Label>
-            <Input id="voterNumber" name="voterNumber" required className="text-right" maxLength={8} value={voterNumber} readOnly disabled />
+            <Input id="voterNumber" name="voterNumber" required className="text-right" maxLength={8} defaultValue={voterNumber} readOnly disabled />
         </div>
         <div className="space-y-2">
           <Label htmlFor="name">الاسم</Label>
-          <Input id="name" name="name" required className="text-right" />
+          <Input id="name" name="name" required className="text-right" defaultValue={prefilledData?.name} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="surname">اللقب</Label>
-          <Input id="surname" name="surname" required className="text-right" />
+          <Input id="surname" name="surname" required className="text-right" defaultValue={prefilledData?.surname} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="age">العمر</Label>
-          <Input id="age" name="age" type="number" required className="text-right" />
+          <Input id="age" name="age" type="number" required className="text-right" defaultValue={prefilledData?.age} />
         </div>
          <div className="space-y-2">
             <Label htmlFor="gender-join">الجنس</Label>
-            <Select name="gender" required defaultValue="ذكر">
+            <Select name="gender" required defaultValue={prefilledData?.gender || "ذكر"}>
                 <SelectTrigger id="gender-join">
                 <SelectValue placeholder="اختر الجنس" />
                 </SelectTrigger>
@@ -113,11 +119,11 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="phoneNumber">رقم الهاتف</Label>
-          <Input id="phoneNumber" name="phoneNumber" type="tel" required className="text-right" />
+          <Input id="phoneNumber" name="phoneNumber" type="tel" required className="text-right" defaultValue={prefilledData?.phoneNumber} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="educationalAttainment-join">التحصيل الدراسي</Label>
-           <Select name="educationalAttainment" required>
+           <Select name="educationalAttainment" required defaultValue={prefilledData?.educationalAttainment}>
             <SelectTrigger id="educationalAttainment-join">
               <SelectValue placeholder="اختر التحصيل الدراسي" />
             </SelectTrigger>
@@ -151,11 +157,11 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
         </div>
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="registrationCenter">مركز التسجيل</Label>
-          <Input id="registrationCenter" name="registrationCenter" required className="text-right" />
+          <Input id="registrationCenter" name="registrationCenter" required className="text-right" defaultValue={prefilledData?.registrationCenter} />
         </div>
          <div className="space-y-2 md:col-span-2">
           <Label htmlFor="pollingCenter">مركز الاقتراع</Label>
-          <Input id="pollingCenter" name="pollingCenter" required className="text-right" />
+          <Input id="pollingCenter" name="pollingCenter" required className="text-right" defaultValue={prefilledData?.pollingCenter} />
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 pt-6">

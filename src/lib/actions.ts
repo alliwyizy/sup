@@ -284,19 +284,14 @@ export async function checkVoter(
 
     const generalData = await findInGeneralVoterDatabase(voterNumber);
 
-    if (!generalData) {
-      return {
-        success: true,
-        voterNumber: voterNumber,
-        prefilledData: null,
-        message: "لم يتم العثور على بياناتك. يرجى إدخال معلوماتك يدويًا."
-      };
-    }
-    
     return {
-      error: "رقم الناخب هذا موجود بالفعل. لا يمكن تقديم طلب جديد.",
-      voterNumber,
-    }
+      success: true,
+      voterNumber: voterNumber,
+      prefilledData: generalData || null,
+      message: generalData 
+        ? "تم العثور على بياناتك. يرجى إكمال المعلومات المتبقية."
+        : "لم يتم العثور على بياناتك. يرجى إدخال معلوماتك يدويًا."
+    };
 }
 
 

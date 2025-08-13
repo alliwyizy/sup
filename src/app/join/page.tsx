@@ -53,7 +53,7 @@ export default function JoinPage() {
                 initialError={error}
               />
             )}
-            {step === 2 && <JoinForm voterNumber={voterNumber} />}
+            {step === 2 && <JoinForm voterNumber={voterNumber} prefilledData={prefilledData} />}
           </CardContent>
         </Card>
       </div>
