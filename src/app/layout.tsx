@@ -1,9 +1,9 @@
 import type {Metadata} from 'next';
-import { Inter } from 'next/font/google';
+import { Cairo } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const cairo = Cairo({ subsets: ['arabic'], variable: '--font-cairo' });
 
 export const metadata: Metadata = {
   title: 'Al-Luwaizi Supporter Database',
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body className={`${inter.variable} font-body antialiased`}>
+      <body className={`${cairo.variable} font-body antialiased`}>
         {children}
         <Toaster />
       </body>
