@@ -136,3 +136,40 @@ export async function addSupporter(prevState: AddSupporterState, formData: FormD
     }
   }
 }
+
+export type SupporterRequestState = {
+  error?: string | null;
+  message?: string | null;
+}
+
+export async function submitSupporterRequest(prevState: SupporterRequestState, formData: FormData): Promise<SupporterRequestState> {
+  const validatedFields = SupporterSchema.safeParse(Object.fromEntries(formData.entries()));
+  
+  if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    const firstError = Object.values(errors)[0]?.[0];
+    return {
+      error: firstError || "يرجى التحقق من الحقول."
+    }
+  }
+  
+  try {
+    const existingSupporter = await findSupporterByVoterNumber(validatedFields.data.voterNumber);
+    if(existingSupporter) {
+      return {
+        error: "أنت مسجل بالفعل كمؤيد. شكراً لدعمك!"
+      }
+    }
+    
+    // In a real application, you would save this to a "pending" collection in your database.
+    console.log("New supporter request received:", validatedFields.data);
+
+    return {
+      message: `شكراً لك، ${validatedFields.data.name}. لقد تم إرسال طلبك بنجاح للمراجعة.`
+    }
+  } catch(e) {
+    return {
+      error: "حدث خطأ غير متوقع في الخادم. يرجى المحاولة مرة أخرى."
+    }
+  }
+}

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { LogIn } from "lucide-react"
+import { LogIn, UserPlus } from "lucide-react"
 
 export default function Home() {
   return (
@@ -28,6 +28,12 @@ export default function Home() {
             <SearchForm />
           </CardContent>
           <CardFooter className="flex-col gap-4 pt-4">
+            <Button className="w-full" asChild>
+              <Link href="/join">
+                <UserPlus />
+                انضم كمؤيد
+              </Link>
+            </Button>
             <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
