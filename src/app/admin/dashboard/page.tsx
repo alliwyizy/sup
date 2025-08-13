@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { getAllSupporters, getReferrers, getPendingSupporters, type Supporter } from "@/lib/data";
+import { getAllSupporters, getReferrers, type Supporter } from "@/lib/data";
 import { SupportersTable } from "@/components/supporters-table";
 import {
   Card,
@@ -13,28 +13,23 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, UserPlus, Hourglass } from "lucide-react";
-import { DashboardCharts } from "@/components/dashboard-charts";
 
 
 export default function DashboardPage() {
   const [allSupporters, setAllSupporters] = React.useState<(Supporter & { referrerName?: string })[]>([]);
   const [referrers, setReferrers] = React.useState<Supporter[]>([]);
-  const [pendingCount, setPendingCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [key, setKey] = React.useState(Date.now()); // Key to force re-render
 
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
-      const [supportersData, referrersData, pendingData] = await Promise.all([
+      const [supportersData, referrersData] = await Promise.all([
         getAllSupporters(),
         getReferrers(),
-        getPendingSupporters(),
       ]);
       setAllSupporters(supportersData);
       setReferrers(referrersData);
-      setPendingCount(pendingData.length);
     } catch (error) {
       console.error("Failed to fetch data", error);
     } finally {
@@ -50,44 +45,12 @@ export default function DashboardPage() {
     setKey(Date.now());
   };
 
-  const stats = [
-    { title: "إجمالي المؤيدين", value: allSupporters.length, icon: Users },
-    { title: "إجمالي المعرفين", value: referrers.length, icon: UserPlus },
-    { title: "الطلبات المعلقة", value: pendingCount, icon: Hourglass },
-  ];
-
   return (
-    <div className="w-full max-w-7xl mx-auto grid gap-6">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {stats.map((stat, index) => (
-            <Card key={index}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <stat.icon className="h-5 w-5 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                {loading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold">{stat.value}</div>}
-                </CardContent>
-            </Card>
-            ))}
-      </div>
-
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-         <Card className="lg:col-span-3">
-           <CardHeader>
-             <CardTitle>المؤيدون لكل معرّف</CardTitle>
-             <CardDescription>
-                رسم بياني يوضح عدد المؤيدين الذين جلبهم كل معرّف.
-             </CardDescription>
-           </CardHeader>
-           <CardContent className="pl-2">
-             {loading ? <Skeleton className="h-[300px] w-full" /> : <DashboardCharts data={allSupporters} />}
-           </CardContent>
-         </Card>
-         <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle>قائمة المؤيدين</CardTitle>
-                <CardDescription>
+    <div className="w-full max-w-5xl mx-auto grid gap-6">
+        <Card>
+            <CardHeader className="text-center">
+                <CardTitle className="font-headline text-2xl tracking-tight">قائمة المؤيدين</CardTitle>
+                <CardDescription className="pt-2">
                     عرض وإدارة جميع المؤيدين والمعرّفين في النظام.
                 </CardDescription>
             </CardHeader>
@@ -121,8 +84,6 @@ export default function DashboardPage() {
                 </Tabs>
             </CardContent>
         </Card>
-      </div>
-
     </div>
   );
 }
