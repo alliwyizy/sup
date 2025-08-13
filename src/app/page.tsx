@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -13,7 +12,21 @@ import { LogIn, UserPlus } from "lucide-react"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen w-full items-center justify-center p-4 bg-background">
+    <main className="relative flex min-h-screen w-full flex-col items-center justify-center p-4 bg-background">
+      <div className="absolute top-4 right-4 flex gap-2">
+        <Button asChild>
+            <Link href="/join">
+            <UserPlus />
+            انضم كمؤيد
+            </Link>
+        </Button>
+        <Button variant="outline" asChild>
+            <Link href="/admin/login">
+            <LogIn />
+            تسجيل دخول المسؤول
+            </Link>
+        </Button>
+      </div>
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="text-center">
@@ -27,30 +40,6 @@ export default function Home() {
           <CardContent>
             <SearchForm />
           </CardContent>
-          <CardFooter className="flex-col gap-4 pt-4">
-            <Button className="w-full" asChild>
-              <Link href="/join">
-                <UserPlus />
-                انضم كمؤيد
-              </Link>
-            </Button>
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  أو
-                </span>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/admin/login">
-                <LogIn />
-                تسجيل دخول المسؤول
-              </Link>
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     </main>
