@@ -10,7 +10,7 @@ import {
   approveSupporter as approveSupporterInDb,
   rejectSupporter as rejectSupporterInDb,
   findInGeneralVoterDatabase,
-  addReferrer as addReferrerToDb,
+  toggleReferrerStatus as toggleReferrerStatusInDb,
   type Supporter 
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
@@ -272,30 +272,20 @@ export async function rejectSupporter(voterNumber: string): Promise<RequestActio
   }
 }
 
-
-export type AddReferrerState = {
-  error?: string | null;
-  message?: string | null;
+export type ReferrerActionState = {
+    error?: string | null;
+    message?: string | null;
 };
 
-const ReferrerSchema = z.object({
-  name: z.string().min(1, { message: "اسم المعرّف مطلوب." }),
-});
-
-export async function addReferrer(prevState: AddReferrerState, formData: FormData): Promise<AddReferrerState> {
-  const validatedFields = ReferrerSchema.safeParse(Object.fromEntries(formData.entries()));
-
-  if (!validatedFields.success) {
-    return {
-      error: validatedFields.error.flatten().fieldErrors.name?.[0],
-    };
-  }
-
-  try {
-    const newReferrer = await addReferrerToDb(validatedFields.data.name);
-    revalidatePath('/admin/referrers');
-    return { message: `تمت إضافة المعرّف "${newReferrer.name}" بنجاح.` };
-  } catch (e: any) {
-    return { error: e.message || "فشلت إضافة المعرّف." };
-  }
+export async function toggleReferrerStatus(voterNumber: string): Promise<ReferrerActionState> {
+    try {
+        const { supporter, isNowReferrer } = await toggleReferrerStatusInDb(voterNumber);
+        revalidatePath('/admin/referrers');
+        const message = isNowReferrer
+            ? `تمت ترقية ${supporter.name} ${supporter.surname} إلى معرّف.`
+            : `تمت إزالة ${supporter.name} ${supporter.surname} من قائمة المعرّفين.`;
+        return { message };
+    } catch (e: any) {
+        return { error: e.message || "فشلت عملية تحديث حالة المعرّف." };
+    }
 }

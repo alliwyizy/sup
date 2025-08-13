@@ -9,12 +9,8 @@ export interface Supporter {
   educationalAttainment: "امي" | "يقرأ ويكتب" | "ابتدائية" | "متوسطة" | "اعدادية" | "طالب جامعة" | "دبلوم" | "بكالوريوس" | "ماجستير" | "دكتوراة";
   registrationCenter: string;
   pollingCenter: string;
-  referrerId?: string;
-}
-
-export interface Referrer {
-  id: string;
-  name: string;
+  referrerId?: string; // This will now be the voterNumber of the referrer
+  isReferrer?: boolean;
 }
 
 // This simulates a general database of all voters
@@ -44,13 +40,43 @@ const generalVoterDatabase: Supporter[] = [
 ];
 
 
-const referrers: Referrer[] = [
-    { id: 'ref1', name: 'أبو مصطفى' },
-    { id: 'ref2', name: 'الحاج سالم' },
-    { id: 'ref3', name: 'الشيخ علي' },
-];
-
 const supporters: Supporter[] = [
+  {
+    voterNumber: '10000001',
+    name: 'أبو مصطفى',
+    surname: 'الكريم',
+    age: 55,
+    gender: 'ذكر',
+    phoneNumber: '07700000001',
+    educationalAttainment: 'اعدادية',
+    registrationCenter: 'مركز تسجيل الكرخ',
+    pollingCenter: 'مدرسة المتنبي',
+    isReferrer: true,
+  },
+  {
+    voterNumber: '10000002',
+    name: 'الحاج سالم',
+    surname: 'الجنابي',
+    age: 60,
+    gender: 'ذكر',
+    phoneNumber: '07700000002',
+    educationalAttainment: 'متوسطة',
+    registrationCenter: 'مركز تسجيل الرصافة',
+    pollingCenter: 'مدرسة الفراهيدي',
+    isReferrer: true,
+  },
+  {
+    voterNumber: '10000003',
+    name: 'الشيخ علي',
+    surname: 'العبيدي',
+    age: 48,
+    gender: 'ذكر',
+    phoneNumber: '07700000003',
+    educationalAttainment: 'بكالوريوس',
+    registrationCenter: 'مركز تسجيل الاعظمية',
+    pollingCenter: 'مسجد ومركز ابو حنيفة',
+    isReferrer: true,
+  },
   {
     voterNumber: '19850101',
     name: 'أحمد',
@@ -61,7 +87,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "بكالوريوس",
     registrationCenter: "مركز تسجيل الرصافة",
     pollingCenter: 'مدرسة الرشيد الابتدائية',
-    referrerId: 'ref1',
+    referrerId: '10000001', // voterNumber of أبو مصطفى
   },
   {
     voterNumber: '19920515',
@@ -73,7 +99,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "ماجستير",
     registrationCenter: "مركز تسجيل الكرخ",
     pollingCenter: 'إعدادية الفرات للبنات',
-    referrerId: 'ref2',
+    referrerId: '10000002', // voterNumber of الحاج سالم
   },
   {
     voterNumber: '19781120',
@@ -85,7 +111,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "اعدادية",
     registrationCenter: "مركز تسجيل الأعظمية",
     pollingCenter: 'مركز شباب المدينة',
-    referrerId: 'ref1',
+    referrerId: '10000001', // voterNumber of أبو مصطفى
   },
 ];
 
@@ -100,7 +126,7 @@ const pendingSupporters: Supporter[] = [
         educationalAttainment: "طالب جامعة",
         registrationCenter: "مركز تسجيل المنصور",
         pollingCenter: 'ثانوية دجلة للمتميزات',
-        referrerId: 'ref3',
+        referrerId: '10000003', // voterNumber of الشيخ علي
     },
     {
         voterNumber: '19980710',
@@ -123,18 +149,21 @@ export async function findInGeneralVoterDatabase(voterNumber: string): Promise<S
 
 export async function findSupporterByVoterNumber(voterNumber: string, checkPending = false): Promise<(Supporter & { referrerName?: string }) | undefined> {
   await new Promise(resolve => setTimeout(resolve, 750));
-  let supporter = supporters.find(s => s.voterNumber === voterNumber);
-  if (checkPending && !supporter) {
-    supporter = pendingSupporters.find(s => s.voterNumber === voterNumber);
+  let allApprovedAndPending = [...supporters];
+  if (checkPending) {
+    allApprovedAndPending = [...supporters, ...pendingSupporters];
   }
+  
+  const supporter = allApprovedAndPending.find(s => s.voterNumber === voterNumber);
 
   if (supporter) {
-      const referrer = supporter.referrerId ? referrers.find(r => r.id === supporter.referrerId) : undefined;
-      return { ...supporter, referrerName: referrer?.name };
+      const referrer = supporter.referrerId ? supporters.find(r => r.voterNumber === supporter.referrerId) : undefined;
+      return { ...supporter, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
   }
 
   return undefined;
 }
+
 
 export async function addSupporter(supporter: Supporter): Promise<Supporter> {
   await new Promise(resolve => setTimeout(resolve, 500));
@@ -154,8 +183,8 @@ export async function addPendingSupporter(supporter: Supporter): Promise<Support
 export async function getPendingSupporters(): Promise<(Supporter & { referrerName?: string })[]> {
     await new Promise(resolve => setTimeout(resolve, 500));
     return pendingSupporters.map(s => {
-        const referrer = s.referrerId ? referrers.find(r => r.id === s.referrerId) : undefined;
-        return { ...s, referrerName: referrer?.name };
+        const referrer = s.referrerId ? supporters.find(r => r.voterNumber === s.referrerId) : undefined;
+        return { ...s, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
     });
 }
 
@@ -179,21 +208,22 @@ export async function rejectSupporter(voterNumber: string): Promise<void> {
     pendingSupporters.splice(supporterIndex, 1);
 }
 
-
-export async function getReferrers(): Promise<Referrer[]> {
+export async function getAllSupporters(): Promise<Supporter[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
-    return [...referrers];
+    return [...supporters];
 }
 
-export async function addReferrer(name: string): Promise<Referrer> {
+export async function getReferrers(): Promise<Supporter[]> {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return supporters.filter(s => s.isReferrer);
+}
+
+export async function toggleReferrerStatus(voterNumber: string): Promise<{ supporter: Supporter; isNowReferrer: boolean }> {
     await new Promise(resolve => setTimeout(resolve, 500));
-    if (referrers.find(r => r.name.trim().toLowerCase() === name.trim().toLowerCase())) {
-        throw new Error("المعرّف موجود بالفعل.");
+    const supporter = supporters.find(s => s.voterNumber === voterNumber);
+    if (!supporter) {
+        throw new Error("لم يتم العثور على المؤيد.");
     }
-    const newReferrer: Referrer = {
-        id: `ref${Date.now()}`,
-        name: name,
-    };
-    referrers.push(newReferrer);
-    return newReferrer;
+    supporter.isReferrer = !supporter.isReferrer;
+    return { supporter, isNowReferrer: !!supporter.isReferrer };
 }

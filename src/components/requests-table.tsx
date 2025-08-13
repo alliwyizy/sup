@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { approveSupporter, rejectSupporter, type RequestActionState } from "@/lib/actions";
-import type { Supporter, Referrer } from "@/lib/data";
+import type { Supporter } from "@/lib/data";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 

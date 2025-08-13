@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
 
 const initialState: SearchState = {
   message: null,
@@ -78,7 +79,10 @@ export function SearchForm() {
       {state.data && (
         <Card className="animate-in fade-in-50">
           <CardHeader>
-            <CardTitle>بيانات المؤيد</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>بيانات المؤيد</span>
+              {state.data.isReferrer && <Badge>معرّف</Badge>}
+            </CardTitle>
             <CardDescription>
               {state.message}
             </CardDescription>

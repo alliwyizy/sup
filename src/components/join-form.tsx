@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 
 
 import { submitSupporterRequest, type SupporterRequestState } from "@/lib/actions"
-import { getReferrers, type Referrer } from "@/lib/data"
+import { getReferrers, type Supporter } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -47,7 +47,7 @@ function SubmitButton() {
 
 export function JoinForm({ voterNumber }: { voterNumber: string }) {
   const [state, formAction] = useActionState(submitSupporterRequest, initialState)
-  const [referrers, setReferrers] = React.useState<Referrer[]>([]);
+  const [referrers, setReferrers] = React.useState<Supporter[]>([]);
   const { toast } = useToast()
   const router = useRouter();
 
@@ -143,7 +143,7 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
                 </SelectTrigger>
                 <SelectContent>
                 {referrers.map((referrer) => (
-                    <SelectItem key={referrer.id} value={referrer.id}>{referrer.name}</SelectItem>
+                    <SelectItem key={referrer.voterNumber} value={referrer.voterNumber}>{referrer.name} {referrer.surname}</SelectItem>
                 ))}
                 </SelectContent>
             </Select>

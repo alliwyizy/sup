@@ -7,7 +7,7 @@ import { Loader2, UserPlus } from "lucide-react"
 import * as React from "react"
 
 import { addSupporter, type AddSupporterState } from "@/lib/actions"
-import { getReferrers, type Referrer } from "@/lib/data"
+import { getReferrers, type Supporter } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -44,7 +44,7 @@ function SubmitButton() {
 
 export function AddSupporterForm() {
   const [state, formAction] = useActionState(addSupporter, initialState)
-  const [referrers, setReferrers] = React.useState<Referrer[]>([]);
+  const [referrers, setReferrers] = React.useState<Supporter[]>([]);
   const { toast } = useToast()
   const formRef = React.useRef<HTMLFormElement>(null)
 
@@ -136,7 +136,7 @@ export function AddSupporterForm() {
                 </SelectTrigger>
                 <SelectContent>
                 {referrers.map((referrer) => (
-                    <SelectItem key={referrer.id} value={referrer.id}>{referrer.name}</SelectItem>
+                    <SelectItem key={referrer.voterNumber} value={referrer.voterNumber}>{referrer.name} {referrer.surname}</SelectItem>
                 ))}
                 </SelectContent>
             </Select>
