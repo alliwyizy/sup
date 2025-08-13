@@ -1,8 +1,8 @@
 
 "use client";
 
+import { useActionState } from "react"
 import { useFormStatus } from "react-dom";
-import { useActionState } from "react";
 import { Loader2, SearchCheck } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
@@ -66,8 +66,6 @@ export function VoterCheckForm({ onSuccess, onVoterExists, initialError }: Voter
             required
             className="text-right"
             maxLength={8}
-            pattern="\\d{8}"
-            title="الرجاء إدخال 8 أرقام"
           />
         </div>
          {state.error && (
