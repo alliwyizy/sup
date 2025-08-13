@@ -46,11 +46,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto grid gap-6">
+    <div className="w-full mx-auto grid gap-6">
         <Card>
-            <CardHeader className="text-center">
+            <CardHeader>
                 <CardTitle className="font-headline text-2xl tracking-tight">قائمة المؤيدين</CardTitle>
-                <CardDescription className="pt-2">
+                <CardDescription>
                     عرض وإدارة جميع المؤيدين والمعرّفين في النظام.
                 </CardDescription>
             </CardHeader>

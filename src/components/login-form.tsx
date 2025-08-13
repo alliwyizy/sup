@@ -12,11 +12,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import {
-  CardContent,
-  CardFooter
-} from "@/components/ui/card";
-import Link from "next/link";
 
 
 const initialState: AuthState = {
@@ -64,9 +59,8 @@ export function LoginForm() {
   }, [state, toast, router]);
 
   return (
-    <form ref={formRef} action={formAction}>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
+    <form ref={formRef} action={formAction} className="grid gap-4">
+        <div className="grid gap-2">
           <Label htmlFor="email">البريد الإلكتروني</Label>
           <Input
             id="email"
@@ -77,7 +71,7 @@ export function LoginForm() {
             className="text-right"
           />
         </div>
-        <div className="space-y-2">
+        <div className="grid gap-2">
           <Label htmlFor="password">كلمة المرور</Label>
           <Input
             id="password"
@@ -88,13 +82,7 @@ export function LoginForm() {
             defaultValue="password"
           />
         </div>
-      </CardContent>
-      <CardFooter className="flex-col gap-4">
         <SubmitButton />
-        <Button variant="link" asChild>
-          <Link href="/">العودة إلى صفحة البحث</Link>
-        </Button>
-      </CardFooter>
     </form>
   )
 }

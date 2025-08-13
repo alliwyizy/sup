@@ -1,8 +1,8 @@
 
 "use client"
 
-import { useFormStatus } from "react-dom"
 import { useActionState } from "react"
+import { useFormStatus } from "react-dom"
 import { Loader2, Search } from "lucide-react"
 import * as React from "react"
 
@@ -61,8 +61,8 @@ export function SearchForm() {
 
   return (
     <div className="w-full space-y-6">
-      <form ref={formRef} action={formAction} className="space-y-4">
-        <div className="space-y-2">
+      <form ref={formRef} action={formAction} className="grid gap-4">
+        <div className="grid gap-2">
           <Label htmlFor="voterNumber">رقم الناخب</Label>
           <Input
             id="voterNumber"
