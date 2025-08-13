@@ -74,8 +74,8 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
              <TableRow key={supporter.voterNumber}>
               <TableCell className="font-medium">
                 <div className="flex flex-col">
-                  <span>{supporter.name} {supporter.surname}</span>
-                  <span className="text-xs text-muted-foreground sm:hidden">
+                  <span className="font-bold">{supporter.name} {supporter.surname}</span>
+                  <span className="text-sm text-muted-foreground sm:hidden">
                     {supporter.voterNumber}
                   </span>
                 </div>

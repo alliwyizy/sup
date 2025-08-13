@@ -13,7 +13,7 @@ import { LogIn, UserPlus } from "lucide-react"
 export default function Home() {
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center justify-center p-4 bg-background">
-      <div className="absolute top-4 right-4 flex gap-2">
+      <div className="absolute top-4 right-4 flex flex-col sm:flex-row gap-2">
         <Button asChild>
             <Link href="/join">
             <UserPlus />
