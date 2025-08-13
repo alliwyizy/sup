@@ -3,7 +3,10 @@ export interface Supporter {
   name: string;
   surname: string;
   age: number;
+  gender: "ذكر" | "انثى";
   phoneNumber: string;
+  educationalAttainment: "امي" | "يقرأ ويكتب" | "ابتدائية" | "متوسطة" | "اعدادية" | "طالب جامعة" | "دبلوم" | "بكالوريوس" | "ماجستير" | "دكتوراة";
+  registrationCenter: string;
   pollingCenter: string;
 }
 
@@ -13,7 +16,10 @@ const supporters: Supporter[] = [
     name: 'أحمد',
     surname: 'المحمد',
     age: 39,
+    gender: "ذكر",
     phoneNumber: '07701234567',
+    educationalAttainment: "بكالوريوس",
+    registrationCenter: "مركز تسجيل الرصافة",
     pollingCenter: 'مدرسة الرشيد الابتدائية',
   },
   {
@@ -21,7 +27,10 @@ const supporters: Supporter[] = [
     name: 'فاطمة',
     surname: 'علي',
     age: 32,
+    gender: "انثى",
     phoneNumber: '07809876543',
+    educationalAttainment: "ماجستير",
+    registrationCenter: "مركز تسجيل الكرخ",
     pollingCenter: 'إعدادية الفرات للبنات',
   },
   {
@@ -29,7 +38,10 @@ const supporters: Supporter[] = [
     name: 'خالد',
     surname: 'الحسن',
     age: 45,
+    gender: "ذكر",
     phoneNumber: '07901122334',
+    educationalAttainment: "اعدادية",
+    registrationCenter: "مركز تسجيل الأعظمية",
     pollingCenter: 'مركز شباب المدينة',
   },
 ];
@@ -40,7 +52,10 @@ const pendingSupporters: Supporter[] = [
         name: 'سارة',
         surname: 'الجاسم',
         age: 23,
+        gender: "انثى",
         phoneNumber: '07711223344',
+        educationalAttainment: "طالب جامعة",
+        registrationCenter: "مركز تسجيل المنصور",
         pollingCenter: 'ثانوية دجلة للمتميزات',
     },
     {
@@ -48,7 +63,10 @@ const pendingSupporters: Supporter[] = [
         name: 'يوسف',
         surname: 'العامر',
         age: 26,
+        gender: "ذكر",
         phoneNumber: '07822334455',
+        educationalAttainment: "دبلوم",
+        registrationCenter: "مركز تسجيل الكاظمية",
         pollingCenter: 'مدرسة النهضة الأساسية',
     }
 ];

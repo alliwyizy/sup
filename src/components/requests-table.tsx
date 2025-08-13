@@ -71,8 +71,8 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
           <TableRow>
             <TableHead>الاسم الكامل</TableHead>
             <TableHead>رقم الناخب</TableHead>
-            <TableHead>رقم الهاتف</TableHead>
-            <TableHead>مركز الاقتراع</TableHead>
+            <TableHead>التحصيل الدراسي</TableHead>
+            <TableHead>مركز التسجيل</TableHead>
             <TableHead className="text-center">الإجراءات</TableHead>
           </TableRow>
         </TableHeader>
@@ -83,8 +83,8 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
                 {supporter.name} {supporter.surname}
               </TableCell>
               <TableCell>{supporter.voterNumber}</TableCell>
-              <TableCell>{supporter.phoneNumber}</TableCell>
-              <TableCell>{supporter.pollingCenter}</TableCell>
+              <TableCell>{supporter.educationalAttainment}</TableCell>
+              <TableCell>{supporter.registrationCenter}</TableCell>
               <TableCell className="text-center">
                 <form
                   onSubmit={async (e) => {

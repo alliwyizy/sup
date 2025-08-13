@@ -96,8 +96,20 @@ export function SearchForm() {
               <span>{state.data.age}</span>
             </div>
             <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-medium text-muted-foreground">الجنس</span>
+              <span>{state.data.gender}</span>
+            </div>
+            <div className="flex items-center justify-between border-b pb-2">
               <span className="font-medium text-muted-foreground">رقم الهاتف</span>
               <span dir="ltr" className="font-mono">{state.data.phoneNumber}</span>
+            </div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-medium text-muted-foreground">التحصيل الدراسي</span>
+              <span>{state.data.educationalAttainment}</span>
+            </div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-medium text-muted-foreground">مركز التسجيل</span>
+              <span className="text-left">{state.data.registrationCenter}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="font-medium text-muted-foreground">مركز الاقتراع</span>

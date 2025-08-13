@@ -112,7 +112,10 @@ const SupporterSchema = z.object({
     name: z.string().min(1, { message: "الاسم مطلوب." }),
     surname: z.string().min(1, { message: "اللقب مطلوب." }),
     age: z.coerce.number().min(18, { message: "يجب أن يكون العمر 18 عامًا على الأقل." }),
+    gender: z.enum(["ذكر", "انثى"], { errorMap: () => ({ message: "الرجاء اختيار الجنس." }) }),
     phoneNumber: z.string().min(1, { message: "رقم الهاتف مطلوب." }),
+    educationalAttainment: z.enum(["امي", "يقرأ ويكتب", "ابتدائية", "متوسطة", "اعدادية", "طالب جامعة", "دبلوم", "بكالوريوس", "ماجستير", "دكتوراة"], { errorMap: () => ({ message: "الرجاء اختيار التحصيل الدراسي." }) }),
+    registrationCenter: z.string().min(1, { message: "مركز التسجيل مطلوب." }),
     pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
 });
 
@@ -134,7 +137,7 @@ export async function addSupporter(prevState: AddSupporterState, formData: FormD
         error: "هذا المؤيد موجود بالفعل في قاعدة البيانات."
       }
     }
-    await addSupporterToDb(validatedFields.data);
+    await addSupporterToDb(validatedFields.data as Supporter);
     revalidatePath('/admin/add');
     return {
       message: `تمت إضافة "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.`
@@ -163,7 +166,7 @@ export async function submitSupporterRequest(prevState: SupporterRequestState, f
   }
   
   try {
-    await addPendingSupporter(validatedFields.data);
+    await addPendingSupporter(validatedFields.data as Supporter);
     return {
       message: `شكراً لك، ${validatedFields.data.name}. لقد تم إرسال طلبك بنجاح للمراجعة.`
     }
