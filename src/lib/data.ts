@@ -9,7 +9,7 @@ export interface Supporter {
 
 const supporters: Supporter[] = [
   {
-    voterNumber: '198501011234',
+    voterNumber: '19850101',
     name: 'أحمد',
     surname: 'المحمد',
     age: 39,
@@ -17,7 +17,7 @@ const supporters: Supporter[] = [
     pollingCenter: 'مدرسة الرشيد الابتدائية',
   },
   {
-    voterNumber: '199205155678',
+    voterNumber: '19920515',
     name: 'فاطمة',
     surname: 'علي',
     age: 32,
@@ -25,7 +25,7 @@ const supporters: Supporter[] = [
     pollingCenter: 'إعدادية الفرات للبنات',
   },
   {
-    voterNumber: '197811209012',
+    voterNumber: '19781120',
     name: 'خالد',
     surname: 'الحسن',
     age: 45,
@@ -36,7 +36,7 @@ const supporters: Supporter[] = [
 
 const pendingSupporters: Supporter[] = [
     {
-        voterNumber: '200102038899',
+        voterNumber: '20010203',
         name: 'سارة',
         surname: 'الجاسم',
         age: 23,
@@ -44,7 +44,7 @@ const pendingSupporters: Supporter[] = [
         pollingCenter: 'ثانوية دجلة للمتميزات',
     },
     {
-        voterNumber: '199807107766',
+        voterNumber: '19980710',
         name: 'يوسف',
         surname: 'العامر',
         age: 26,

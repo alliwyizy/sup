@@ -20,7 +20,7 @@ export type SearchState = {
 }
 
 const VoterSchema = z.object({
-  voterNumber: z.string().min(1, { message: "الرجاء إدخال رقم الناخب." }),
+  voterNumber: z.string().regex(/^\d{8}$/, { message: "رقم الناخب يجب أن يتكون من 8 أرقام." }),
 })
 
 export async function searchByVoterNumber(
@@ -108,12 +108,12 @@ export type AddSupporterState = {
 }
 
 const SupporterSchema = z.object({
-  name: z.string().min(1, { message: "الاسم مطلوب." }),
-  surname: z.string().min(1, { message: "اللقب مطلوب." }),
-  age: z.coerce.number().min(18, { message: "يجب أن يكون العمر 18 عامًا على الأقل." }),
-  voterNumber: z.string().min(1, { message: "رقم الناخب مطلوب." }),
-  phoneNumber: z.string().min(1, { message: "رقم الهاتف مطلوب." }),
-  pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
+    voterNumber: z.string().regex(/^\d{8}$/, { message: "رقم الناخب يجب أن يتكون من 8 أرقام." }),
+    name: z.string().min(1, { message: "الاسم مطلوب." }),
+    surname: z.string().min(1, { message: "اللقب مطلوب." }),
+    age: z.coerce.number().min(18, { message: "يجب أن يكون العمر 18 عامًا على الأقل." }),
+    phoneNumber: z.string().min(1, { message: "رقم الهاتف مطلوب." }),
+    pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
 });
 
 export async function addSupporter(prevState: AddSupporterState, formData: FormData): Promise<AddSupporterState> {

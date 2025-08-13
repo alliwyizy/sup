@@ -58,6 +58,10 @@ export function AddSupporterForm() {
   return (
     <form ref={formRef} action={formAction}>
       <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="voterNumber">رقم الناخب (8 أرقام)</Label>
+          <Input id="voterNumber" name="voterNumber" required className="text-right" maxLength={8} />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="name">الاسم</Label>
           <Input id="name" name="name" required className="text-right" />
@@ -71,14 +75,10 @@ export function AddSupporterForm() {
           <Input id="age" name="age" type="number" required className="text-right" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="voterNumber">رقم الناخب</Label>
-          <Input id="voterNumber" name="voterNumber" required className="text-right" />
-        </div>
-        <div className="space-y-2">
           <Label htmlFor="phoneNumber">رقم الهاتف</Label>
           <Input id="phoneNumber" name="phoneNumber" type="tel" required className="text-right" />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="pollingCenter">مركز الاقتراع</Label>
           <Input id="pollingCenter" name="pollingCenter" required className="text-right" />
         </div>
