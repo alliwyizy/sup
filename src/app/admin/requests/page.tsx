@@ -13,7 +13,7 @@ export default async function RequestsPage() {
 
   return (
     <div className="w-full max-w-6xl">
-        <Card className="shadow-lg">
+        <Card>
         <CardHeader className="text-center">
             <CardTitle className="font-headline text-2xl tracking-tight">
                 مراجعة الطلبات المعلقة

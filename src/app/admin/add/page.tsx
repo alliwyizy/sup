@@ -9,8 +9,8 @@ import {
 
 export default function AddSupporterPage() {
   return (
-    <div className="w-full">
-      <Card className="shadow-lg">
+    <div className="w-full max-w-2xl">
+      <Card>
         <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl tracking-tight">
             إضافة مؤيد جديد
