@@ -64,6 +64,7 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
             verticalAlign="top" 
             align="right" 
             wrapperStyle={{ paddingBottom: '1rem' }}
+            formatter={(value) => <span className="text-muted-foreground">{value}</span>}
         />
         <Bar 
             dataKey="total" 

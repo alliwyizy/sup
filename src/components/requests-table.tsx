@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useFormStatus, useFormState } from "react-dom";
-import { Loader2, Check, X, Trash2 } from "lucide-react";
+import { Loader2, Check, X, UserCheck, UserX } from "lucide-react";
 
 import {
   Table,
@@ -92,10 +92,10 @@ export function RequestsTable({ data }: { data: (Supporter & { referrerName?: st
                          <Button
                            size="sm"
                            variant="ghost"
-                           className="text-green-600 hover:text-green-700"
+                           className="text-green-600 hover:bg-green-100 hover:text-green-700"
                            formAction={() => memoizedApprove(supporter.voterNumber)}
                          >
-                           <Check className="h-4 w-4" />
+                           <UserCheck className="h-4 w-4" />
                          </Button>
                        </TooltipTrigger>
                        <TooltipContent>
@@ -109,10 +109,10 @@ export function RequestsTable({ data }: { data: (Supporter & { referrerName?: st
                          <Button
                            size="sm"
                            variant="ghost"
-                           className="text-red-600 hover:text-red-700"
+                           className="text-red-600 hover:bg-red-100 hover:text-red-700"
                            formAction={() => memoizedReject(supporter.voterNumber)}
                          >
-                           <X className="h-4 w-4" />
+                           <UserX className="h-4 w-4" />
                          </Button>
                        </TooltipTrigger>
                        <TooltipContent>

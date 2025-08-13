@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useFormStatus } from "react-dom"
@@ -31,7 +32,7 @@ function SubmitButton() {
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <LogIn className="ml-2 h-5 w-5" />
+          <LogIn />
           تسجيل الدخول
         </>
       )}
@@ -58,7 +59,7 @@ export function LoginForm() {
         title: "تم تسجيل الدخول بنجاح",
         description: state.message,
       });
-      router.push('/admin/add');
+      router.push('/admin/stats');
     }
   }, [state, toast, router]);
 

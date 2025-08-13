@@ -16,6 +16,7 @@ import {
   type Supporter 
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
 // #region Schemas
 const SupporterSchema = z.object({
@@ -141,9 +142,8 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
 
   // This is a mock authentication.
   if (email === "admin@example.com" && password === "password") {
-    return {
-      message: "أهلاً بك. جارٍ توجيهك إلى لوحة الإدارة."
-    }
+    // Redirect in server action
+    redirect('/admin/stats');
   }
 
   return {
@@ -178,6 +178,7 @@ export async function addSupporter(prevState: FormState, formData: FormData): Pr
     await addSupporterToDb(supporterData);
     revalidatePath('/admin/add');
     revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/stats');
     return {
       message: `تمت إضافة "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.`
     }
@@ -204,6 +205,7 @@ export async function updateSupporter(prevState: FormState, formData: FormData):
     }
     await updateSupporterInDb(supporterData as Supporter);
     revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/stats');
     return { message: `تم تحديث بيانات "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.` };
   } catch (e: any) {
     return { error: e.message || "فشل تحديث بيانات المؤيد." };
@@ -214,6 +216,7 @@ export async function deleteSupporter(voterNumber: string): Promise<FormState> {
     try {
         await deleteSupporterInDb(voterNumber);
         revalidatePath('/admin/dashboard');
+        revalidatePath('/admin/stats');
         return { message: "تم حذف المؤيد بنجاح." };
     } catch(e: any) {
         return { error: e.message || "فشلت عملية الحذف." };
@@ -238,6 +241,8 @@ export async function submitSupporterRequest(prevState: SupporterRequestState, f
         referrerId: validatedFields.data.referrerId === 'none' ? undefined : validatedFields.data.referrerId,
     } as Supporter
     await addPendingSupporter(supporterData);
+    revalidatePath('/admin/requests');
+    revalidatePath('/admin/stats');
     return {
       message: `شكراً لك، ${validatedFields.data.name}. لقد تم إرسال طلبك بنجاح للمراجعة.`
     }
@@ -305,6 +310,7 @@ export async function approveSupporter(voterNumber: string): Promise<RequestActi
     const approved = await approveSupporterInDb(voterNumber);
     revalidatePath('/admin/requests');
     revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/stats');
     return { message: `تمت الموافقة على ${approved.name} ${approved.surname}.` };
   } catch (error) {
     return { error: 'فشلت عملية الموافقة.' };
@@ -315,6 +321,7 @@ export async function rejectSupporter(voterNumber: string): Promise<RequestActio
   try {
     await rejectSupporterInDb(voterNumber);
     revalidatePath('/admin/requests');
+    revalidatePath('/admin/stats');
     return { message: 'تم رفض الطلب بنجاح.' };
   } catch (error) {
     return { error: 'فشلت عملية الرفض.' };
@@ -326,6 +333,7 @@ export async function toggleReferrerStatus(voterNumber: string): Promise<Referre
         const { supporter, isNowReferrer } = await toggleReferrerStatusInDb(voterNumber);
         revalidatePath('/admin/referrers');
         revalidatePath('/admin/dashboard');
+        revalidatePath('/admin/stats');
         const message = isNowReferrer
             ? `تمت ترقية ${supporter.name} ${supporter.surname} إلى معرّف.`
             : `تمت إزالة ${supporter.name} ${supporter.surname} من قائمة المعرّفين.`;

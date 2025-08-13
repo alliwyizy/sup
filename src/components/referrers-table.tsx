@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Star, UserPlus } from "lucide-react";
+import { Check, Star, UserCheck, UserX } from "lucide-react";
 
 import {
   Table,
@@ -65,8 +65,8 @@ export function ReferrersTable({ data }: { data: Supporter[] }) {
               </TableCell>
               <TableCell>
                 {supporter.isReferrer ? (
-                  <Badge>
-                    <Check className="ml-1 h-3 w-3" />
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                    <Star className="ml-1 h-3 w-3 text-amber-600" />
                     معرّف
                   </Badge>
                 ) : (
@@ -83,7 +83,7 @@ export function ReferrersTable({ data }: { data: Supporter[] }) {
                           variant="ghost"
                           formAction={() => handleAction(supporter.voterNumber)}
                         >
-                          {supporter.isReferrer ? <Star className="h-4 w-4 text-amber-500" /> : <UserPlus className="h-4 w-4" />}
+                          {supporter.isReferrer ? <UserX className="h-4 w-4 text-destructive" /> : <UserCheck className="h-4 w-4 text-primary" />}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>

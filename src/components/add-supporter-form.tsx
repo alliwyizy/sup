@@ -34,7 +34,7 @@ function SubmitButton() {
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <UserPlus className="ml-2 h-5 w-5" />
+          <UserPlus />
           إضافة مؤيد
         </>
       )}
@@ -130,7 +130,7 @@ export function AddSupporterForm() {
         </div>
         <div className="space-y-2 md:col-span-2">
             <Label htmlFor="referrerId">المعرّف</Label>
-            <Select name="referrerId">
+            <Select name="referrerId" defaultValue="none">
                 <SelectTrigger id="referrerId">
                 <SelectValue placeholder="اختر المعرّف (اختياري)" />
                 </SelectTrigger>

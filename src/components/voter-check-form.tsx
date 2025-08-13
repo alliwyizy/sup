@@ -2,7 +2,7 @@
 "use client";
 
 import { useFormStatus, useFormState } from "react-dom";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, SearchCheck } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
 import type { Supporter } from "@/lib/data";
@@ -28,7 +28,7 @@ function SubmitButton() {
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <ArrowLeft className="ml-2 h-5 w-5" />
+          <SearchCheck />
           تحقق
         </>
       )}
@@ -65,7 +65,7 @@ export function VoterCheckForm({ onSuccess, onVoterExists, initialError }: Voter
             required
             className="text-right"
             maxLength={8}
-            pattern="\d{8}"
+            pattern="\\d{8}"
             title="الرجاء إدخال 8 أرقام"
           />
         </div>

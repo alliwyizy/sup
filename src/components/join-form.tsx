@@ -37,7 +37,7 @@ function SubmitButton() {
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <Send className="ml-2 h-5 w-5" />
+          <Send />
           إرسال الطلب
         </>
       )}
@@ -137,7 +137,7 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
         </div>
         <div className="space-y-2 md:col-span-2">
             <Label htmlFor="referrerId-join">المعرّف</Label>
-            <Select name="referrerId">
+            <Select name="referrerId" defaultValue="none">
                 <SelectTrigger id="referrerId-join">
                 <SelectValue placeholder="اختر المعرّف (اختياري)" />
                 </SelectTrigger>
