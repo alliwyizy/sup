@@ -9,6 +9,12 @@ export interface Supporter {
   educationalAttainment: "امي" | "يقرأ ويكتب" | "ابتدائية" | "متوسطة" | "اعدادية" | "طالب جامعة" | "دبلوم" | "بكالوريوس" | "ماجستير" | "دكتوراة";
   registrationCenter: string;
   pollingCenter: string;
+  referrerId?: string;
+}
+
+export interface Referrer {
+  id: string;
+  name: string;
 }
 
 // This simulates a general database of all voters
@@ -38,6 +44,12 @@ const generalVoterDatabase: Supporter[] = [
 ];
 
 
+const referrers: Referrer[] = [
+    { id: 'ref1', name: 'أبو مصطفى' },
+    { id: 'ref2', name: 'الحاج سالم' },
+    { id: 'ref3', name: 'الشيخ علي' },
+];
+
 const supporters: Supporter[] = [
   {
     voterNumber: '19850101',
@@ -49,6 +61,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "بكالوريوس",
     registrationCenter: "مركز تسجيل الرصافة",
     pollingCenter: 'مدرسة الرشيد الابتدائية',
+    referrerId: 'ref1',
   },
   {
     voterNumber: '19920515',
@@ -60,6 +73,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "ماجستير",
     registrationCenter: "مركز تسجيل الكرخ",
     pollingCenter: 'إعدادية الفرات للبنات',
+    referrerId: 'ref2',
   },
   {
     voterNumber: '19781120',
@@ -71,6 +85,7 @@ const supporters: Supporter[] = [
     educationalAttainment: "اعدادية",
     registrationCenter: "مركز تسجيل الأعظمية",
     pollingCenter: 'مركز شباب المدينة',
+    referrerId: 'ref1',
   },
 ];
 
@@ -85,6 +100,7 @@ const pendingSupporters: Supporter[] = [
         educationalAttainment: "طالب جامعة",
         registrationCenter: "مركز تسجيل المنصور",
         pollingCenter: 'ثانوية دجلة للمتميزات',
+        referrerId: 'ref3',
     },
     {
         voterNumber: '19980710',
@@ -105,14 +121,18 @@ export async function findInGeneralVoterDatabase(voterNumber: string): Promise<S
 }
 
 
-export async function findSupporterByVoterNumber(voterNumber: string, checkPending = false): Promise<Supporter | undefined> {
+export async function findSupporterByVoterNumber(voterNumber: string, checkPending = false): Promise<(Supporter & { referrerName?: string }) | undefined> {
   await new Promise(resolve => setTimeout(resolve, 750));
-  const supporter = supporters.find(s => s.voterNumber === voterNumber);
-  if (supporter) return supporter;
-  if (checkPending) {
-    const pending = pendingSupporters.find(s => s.voterNumber === voterNumber);
-    return pending;
+  let supporter = supporters.find(s => s.voterNumber === voterNumber);
+  if (checkPending && !supporter) {
+    supporter = pendingSupporters.find(s => s.voterNumber === voterNumber);
   }
+
+  if (supporter) {
+      const referrer = supporter.referrerId ? referrers.find(r => r.id === supporter.referrerId) : undefined;
+      return { ...supporter, referrerName: referrer?.name };
+  }
+
   return undefined;
 }
 
@@ -131,9 +151,12 @@ export async function addPendingSupporter(supporter: Supporter): Promise<Support
     return supporter;
 }
 
-export async function getPendingSupporters(): Promise<Supporter[]> {
+export async function getPendingSupporters(): Promise<(Supporter & { referrerName?: string })[]> {
     await new Promise(resolve => setTimeout(resolve, 500));
-    return [...pendingSupporters];
+    return pendingSupporters.map(s => {
+        const referrer = s.referrerId ? referrers.find(r => r.id === s.referrerId) : undefined;
+        return { ...s, referrerName: referrer?.name };
+    });
 }
 
 export async function approveSupporter(voterNumber: string): Promise<Supporter> {
@@ -154,4 +177,23 @@ export async function rejectSupporter(voterNumber: string): Promise<void> {
         throw new Error("Pending supporter not found.");
     }
     pendingSupporters.splice(supporterIndex, 1);
+}
+
+
+export async function getReferrers(): Promise<Referrer[]> {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return [...referrers];
+}
+
+export async function addReferrer(name: string): Promise<Referrer> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (referrers.find(r => r.name.trim().toLowerCase() === name.trim().toLowerCase())) {
+        throw new Error("المعرّف موجود بالفعل.");
+    }
+    const newReferrer: Referrer = {
+        id: `ref${Date.now()}`,
+        name: name,
+    };
+    referrers.push(newReferrer);
+    return newReferrer;
 }

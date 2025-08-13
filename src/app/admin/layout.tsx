@@ -1,6 +1,7 @@
+
 import * as React from "react"
 import Link from "next/link"
-import { FilePlus2, Hourglass, LogOut } from "lucide-react"
+import { FilePlus2, Hourglass, LogOut, Users } from "lucide-react"
 
 import {
   SidebarProvider,
@@ -45,6 +46,14 @@ export default function AdminLayout({
                   <Link href="/admin/requests">
                     <Hourglass />
                     <span>الطلبات المعلقة</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/referrers">
+                    <Users />
+                    <span>إدارة المعرفين</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

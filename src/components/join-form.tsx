@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 
 
 import { submitSupporterRequest, type SupporterRequestState } from "@/lib/actions"
+import { getReferrers, type Referrer } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,8 +47,17 @@ function SubmitButton() {
 
 export function JoinForm({ voterNumber }: { voterNumber: string }) {
   const [state, formAction] = useActionState(submitSupporterRequest, initialState)
+  const [referrers, setReferrers] = React.useState<Referrer[]>([]);
   const { toast } = useToast()
   const router = useRouter();
+
+  React.useEffect(() => {
+    async function fetchReferrers() {
+      const data = await getReferrers();
+      setReferrers(data);
+    }
+    fetchReferrers();
+  }, []);
 
   React.useEffect(() => {
     if (state?.error) {
@@ -124,6 +134,19 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
               <SelectItem value="دكتوراة">دكتوراة</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="referrerId-join">المعرّف</Label>
+            <Select name="referrerId">
+                <SelectTrigger id="referrerId-join">
+                <SelectValue placeholder="اختر المعرّف (اختياري)" />
+                </SelectTrigger>
+                <SelectContent>
+                {referrers.map((referrer) => (
+                    <SelectItem key={referrer.id} value={referrer.id}>{referrer.name}</SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
         </div>
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="registrationCenter">مركز التسجيل</Label>

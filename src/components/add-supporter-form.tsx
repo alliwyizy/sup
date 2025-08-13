@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useFormStatus } from "react-dom"
@@ -6,6 +7,7 @@ import { Loader2, UserPlus } from "lucide-react"
 import * as React from "react"
 
 import { addSupporter, type AddSupporterState } from "@/lib/actions"
+import { getReferrers, type Referrer } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -42,8 +44,17 @@ function SubmitButton() {
 
 export function AddSupporterForm() {
   const [state, formAction] = useActionState(addSupporter, initialState)
+  const [referrers, setReferrers] = React.useState<Referrer[]>([]);
   const { toast } = useToast()
   const formRef = React.useRef<HTMLFormElement>(null)
+
+  React.useEffect(() => {
+    async function fetchReferrers() {
+      const data = await getReferrers();
+      setReferrers(data);
+    }
+    fetchReferrers();
+  }, []);
 
   React.useEffect(() => {
     if (state?.error) {
@@ -116,6 +127,19 @@ export function AddSupporterForm() {
               <SelectItem value="دكتوراة">دكتوراة</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="referrerId">المعرّف</Label>
+            <Select name="referrerId">
+                <SelectTrigger id="referrerId">
+                <SelectValue placeholder="اختر المعرّف (اختياري)" />
+                </SelectTrigger>
+                <SelectContent>
+                {referrers.map((referrer) => (
+                    <SelectItem key={referrer.id} value={referrer.id}>{referrer.name}</SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
         </div>
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="registrationCenter">مركز التسجيل</Label>

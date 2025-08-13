@@ -10,13 +10,14 @@ import {
   approveSupporter as approveSupporterInDb,
   rejectSupporter as rejectSupporterInDb,
   findInGeneralVoterDatabase,
+  addReferrer as addReferrerToDb,
   type Supporter 
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
 
 export type SearchState = {
   id?: number,
-  data?: Supporter | null
+  data?: (Supporter & { referrerName?: string }) | null
   error?: string | null
   message?: string | null
 }
@@ -119,6 +120,7 @@ const SupporterSchema = z.object({
     educationalAttainment: z.enum(["امي", "يقرأ ويكتب", "ابتدائية", "متوسطة", "اعدادية", "طالب جامعة", "دبلوم", "بكالوريوس", "ماجستير", "دكتوراة"], { errorMap: () => ({ message: "الرجاء اختيار التحصيل الدراسي." }) }),
     registrationCenter: z.string().min(1, { message: "مركز التسجيل مطلوب." }),
     pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
+    referrerId: z.string().optional(),
 });
 
 export async function addSupporter(prevState: AddSupporterState, formData: FormData): Promise<AddSupporterState> {
@@ -267,5 +269,33 @@ export async function rejectSupporter(voterNumber: string): Promise<RequestActio
     return { message: 'تم رفض الطلب بنجاح.' };
   } catch (error) {
     return { error: 'فشلت عملية الرفض.' };
+  }
+}
+
+
+export type AddReferrerState = {
+  error?: string | null;
+  message?: string | null;
+};
+
+const ReferrerSchema = z.object({
+  name: z.string().min(1, { message: "اسم المعرّف مطلوب." }),
+});
+
+export async function addReferrer(prevState: AddReferrerState, formData: FormData): Promise<AddReferrerState> {
+  const validatedFields = ReferrerSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      error: validatedFields.error.flatten().fieldErrors.name?.[0],
+    };
+  }
+
+  try {
+    const newReferrer = await addReferrerToDb(validatedFields.data.name);
+    revalidatePath('/admin/referrers');
+    return { message: `تمت إضافة المعرّف "${newReferrer.name}" بنجاح.` };
+  } catch (e: any) {
+    return { error: e.message || "فشلت إضافة المعرّف." };
   }
 }

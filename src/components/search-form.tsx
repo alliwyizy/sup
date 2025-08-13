@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useFormStatus } from "react-dom"
@@ -106,6 +107,10 @@ export function SearchForm() {
             <div className="flex items-center justify-between border-b pb-2">
               <span className="font-medium text-muted-foreground">التحصيل الدراسي</span>
               <span>{state.data.educationalAttainment}</span>
+            </div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <span className="font-medium text-muted-foreground">المعرّف</span>
+              <span>{state.data.referrerName || 'لا يوجد'}</span>
             </div>
             <div className="flex items-center justify-between border-b pb-2">
               <span className="font-medium text-muted-foreground">مركز التسجيل</span>

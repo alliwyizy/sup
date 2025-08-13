@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -15,11 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { approveSupporter, rejectSupporter, type RequestActionState } from "@/lib/actions";
-import type { Supporter } from "@/lib/data";
+import type { Supporter, Referrer } from "@/lib/data";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
-export function RequestsTable({ data }: { data: Supporter[] }) {
+export function RequestsTable({ data }: { data: (Supporter & { referrerName?: string })[] }) {
   const { toast } = useToast();
 
   const handleAction = React.useCallback(
@@ -64,7 +65,7 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
           <TableRow>
             <TableHead>الاسم الكامل</TableHead>
             <TableHead className="hidden sm:table-cell">رقم الناخب</TableHead>
-            <TableHead className="hidden lg:table-cell">التحصيل الدراسي</TableHead>
+            <TableHead className="hidden lg:table-cell">المعرّف</TableHead>
             <TableHead className="hidden md:table-cell">مركز التسجيل</TableHead>
             <TableHead className="text-center">الإجراءات</TableHead>
           </TableRow>
@@ -81,7 +82,7 @@ export function RequestsTable({ data }: { data: Supporter[] }) {
                 </div>
               </TableCell>
               <TableCell className="hidden sm:table-cell">{supporter.voterNumber}</TableCell>
-              <TableCell className="hidden lg:table-cell">{supporter.educationalAttainment}</TableCell>
+              <TableCell className="hidden lg:table-cell">{supporter.referrerName || 'لا يوجد'}</TableCell>
               <TableCell className="hidden md:table-cell">{supporter.registrationCenter}</TableCell>
               <TableCell className="text-center">
                  <form className="flex justify-center gap-1 sm:gap-2">
