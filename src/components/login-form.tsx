@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import {
-  Card,
   CardContent,
   CardFooter
 } from "@/components/ui/card";
@@ -64,38 +63,37 @@ export function LoginForm() {
   }, [state, toast, router]);
 
   return (
-    <Card>
-      <form ref={formRef} action={formAction} className="space-y-4">
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">البريد الإلكتروني</Label>
-            <Input
-              id="email"
-              name="email"
-              placeholder="admin@example.com"
-              required
-              type="email"
-              className="text-right"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">كلمة المرور</Label>
-            <Input
-              id="password"
-              name="password"
-              required
-              type="password"
-              className="text-right"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col gap-4">
-          <SubmitButton />
-          <Button variant="link" asChild>
-            <Link href="/">العودة إلى صفحة البحث</Link>
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+    <form ref={formRef} action={formAction} className="space-y-4">
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">البريد الإلكتروني</Label>
+          <Input
+            id="email"
+            name="email"
+            placeholder="admin@example.com"
+            required
+            type="email"
+            className="text-right"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">كلمة المرور</Label>
+          <Input
+            id="password"
+            name="password"
+            required
+            type="password"
+            className="text-right"
+            defaultValue="password"
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="flex-col gap-4">
+        <SubmitButton />
+        <Button variant="link" asChild>
+          <Link href="/">العودة إلى صفحة البحث</Link>
+        </Button>
+      </CardFooter>
+    </form>
   )
 }
