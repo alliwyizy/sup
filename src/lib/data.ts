@@ -40,7 +40,7 @@ const generalVoterDatabase: Supporter[] = [
 ];
 
 
-const supporters: Supporter[] = [
+let supporters: Supporter[] = [
   {
     voterNumber: '10000001',
     name: 'أبو مصطفى',
@@ -115,7 +115,7 @@ const supporters: Supporter[] = [
   },
 ];
 
-const pendingSupporters: Supporter[] = [
+let pendingSupporters: Supporter[] = [
     {
         voterNumber: '20010203',
         name: 'سارة',
@@ -148,7 +148,7 @@ export async function findInGeneralVoterDatabase(voterNumber: string): Promise<S
 
 
 export async function findSupporterByVoterNumber(voterNumber: string, checkPending = false): Promise<(Supporter & { referrerName?: string }) | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 750));
+  await new Promise(resolve => setTimeout(resolve, 50));
   let allApprovedAndPending = [...supporters];
   if (checkPending) {
     allApprovedAndPending = [...supporters, ...pendingSupporters];
@@ -167,8 +167,34 @@ export async function findSupporterByVoterNumber(voterNumber: string, checkPendi
 
 export async function addSupporter(supporter: Supporter): Promise<Supporter> {
   await new Promise(resolve => setTimeout(resolve, 500));
+  // Add to the main list and ensure it's not pending anymore.
+  const pendingIndex = pendingSupporters.findIndex(p => p.voterNumber === supporter.voterNumber);
+  if (pendingIndex > -1) {
+    pendingSupporters.splice(pendingIndex, 1);
+  }
   supporters.push(supporter);
   return supporter;
+}
+
+export async function updateSupporter(updatedSupporter: Supporter): Promise<Supporter> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const supporterIndex = supporters.findIndex(s => s.voterNumber === updatedSupporter.voterNumber);
+    if (supporterIndex === -1) {
+        throw new Error("لم يتم العثور على المؤيد لتحديثه.");
+    }
+    // Preserve the isReferrer status
+    updatedSupporter.isReferrer = supporters[supporterIndex].isReferrer;
+    supporters[supporterIndex] = updatedSupporter;
+    return updatedSupporter;
+}
+
+export async function deleteSupporter(voterNumber: string): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const supporterIndex = supporters.findIndex(s => s.voterNumber === voterNumber);
+    if (supporterIndex === -1) {
+        throw new Error("لم يتم العثور على المؤيد لحذفه.");
+    }
+    supporters.splice(supporterIndex, 1);
 }
 
 export async function addPendingSupporter(supporter: Supporter): Promise<Supporter> {
@@ -210,7 +236,9 @@ export async function rejectSupporter(voterNumber: string): Promise<void> {
 
 export async function getAllSupporters(): Promise<(Supporter & { referrerName?: string })[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
-    return supporters.map(s => {
+    // sort by name
+    const sorted = [...supporters].sort((a, b) => a.name.localeCompare(b.name));
+    return sorted.map(s => {
         const referrer = s.referrerId ? supporters.find(r => r.voterNumber === s.referrerId) : undefined;
         return { ...s, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
     });
@@ -219,7 +247,8 @@ export async function getAllSupporters(): Promise<(Supporter & { referrerName?: 
 export async function getReferrers(): Promise<Supporter[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     const referrers = supporters.filter(s => s.isReferrer);
-    return referrers.map(s => {
+    const sorted = [...referrers].sort((a, b) => a.name.localeCompare(b.name));
+    return sorted.map(s => {
         const referrer = s.referrerId ? supporters.find(r => r.voterNumber === s.referrerId) : undefined;
         return { ...s, referrerName: referrer ? `${referrer.name} ${referrer.surname}` : undefined };
     });

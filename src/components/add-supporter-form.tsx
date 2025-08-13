@@ -6,7 +6,7 @@ import { useActionState } from "react"
 import { Loader2, UserPlus } from "lucide-react"
 import * as React from "react"
 
-import { addSupporter, type AddSupporterState } from "@/lib/actions"
+import { addSupporter, type FormState } from "@/lib/actions"
 import { getReferrers, type Supporter } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const initialState: AddSupporterState = {
+const initialState: FormState = {
   message: null,
   error: null,
 }
@@ -135,6 +135,7 @@ export function AddSupporterForm() {
                 <SelectValue placeholder="اختر المعرّف (اختياري)" />
                 </SelectTrigger>
                 <SelectContent>
+                <SelectItem value="">لا يوجد</SelectItem>
                 {referrers.map((referrer) => (
                     <SelectItem key={referrer.voterNumber} value={referrer.voterNumber}>{referrer.name} {referrer.surname}</SelectItem>
                 ))}
