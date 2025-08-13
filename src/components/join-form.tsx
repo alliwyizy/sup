@@ -142,7 +142,7 @@ export function JoinForm({ voterNumber }: { voterNumber: string }) {
                 <SelectValue placeholder="اختر المعرّف (اختياري)" />
                 </SelectTrigger>
                 <SelectContent>
-                 <SelectItem value="">لا يوجد</SelectItem>
+                 <SelectItem value="none">لا يوجد</SelectItem>
                 {referrers.map((referrer) => (
                     <SelectItem key={referrer.voterNumber} value={referrer.voterNumber}>{referrer.name} {referrer.surname}</SelectItem>
                 ))}

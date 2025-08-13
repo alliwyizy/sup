@@ -28,7 +28,7 @@ const SupporterSchema = z.object({
     educationalAttainment: z.enum(["امي", "يقرأ ويكتب", "ابتدائية", "متوسطة", "اعدادية", "طالب جامعة", "دبلوم", "بكالوريوس", "ماجستير", "دكتوراة"], { errorMap: () => ({ message: "الرجاء اختيار التحصيل الدراسي." }) }),
     registrationCenter: z.string().min(1, { message: "مركز التسجيل مطلوب." }),
     pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
-    referrerId: z.string().optional().nullable(),
+    referrerId: z.string().optional(),
 });
 
 const VoterSchema = z.object({
@@ -172,7 +172,7 @@ export async function addSupporter(prevState: FormState, formData: FormData): Pr
     // Casting because the schema is validated. We handle the optional referrerId.
     const supporterData = {
         ...validatedFields.data,
-        referrerId: validatedFields.data.referrerId || undefined,
+        referrerId: validatedFields.data.referrerId === 'none' ? undefined : validatedFields.data.referrerId,
     } as Supporter
 
     await addSupporterToDb(supporterData);
@@ -200,7 +200,7 @@ export async function updateSupporter(prevState: FormState, formData: FormData):
   try {
     const supporterData = {
         ...validatedFields.data,
-        referrerId: validatedFields.data.referrerId || undefined,
+        referrerId: validatedFields.data.referrerId === 'none' ? undefined : validatedFields.data.referrerId,
     }
     await updateSupporterInDb(supporterData as Supporter);
     revalidatePath('/admin/dashboard');
@@ -235,7 +235,7 @@ export async function submitSupporterRequest(prevState: SupporterRequestState, f
   try {
     const supporterData = {
         ...validatedFields.data,
-        referrerId: validatedFields.data.referrerId || undefined,
+        referrerId: validatedFields.data.referrerId === 'none' ? undefined : validatedFields.data.referrerId,
     } as Supporter
     await addPendingSupporter(supporterData);
     return {

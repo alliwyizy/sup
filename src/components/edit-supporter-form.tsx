@@ -176,12 +176,12 @@ export function EditSupporterForm({
             </div>
             <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="referrerId-edit">المعرّف</Label>
-                <Select name="referrerId" defaultValue={supporter.referrerId}>
+                <Select name="referrerId" defaultValue={supporter.referrerId || "none"}>
                     <SelectTrigger id="referrerId-edit">
                     <SelectValue placeholder="اختر المعرّف (اختياري)" />
                     </SelectTrigger>
                     <SelectContent>
-                    <SelectItem value="">لا يوجد</SelectItem>
+                    <SelectItem value="none">لا يوجد</SelectItem>
                     {referrers.map((referrer) => (
                         <SelectItem key={referrer.voterNumber} value={referrer.voterNumber}>
                         {referrer.name} {referrer.surname}
