@@ -4,7 +4,6 @@ import { useFormStatus } from "react-dom"
 import { useActionState } from "react"
 import { Loader2, UserPlus } from "lucide-react"
 import * as React from "react"
-import Link from "next/link"
 
 import { addSupporter, type AddSupporterState } from "@/lib/actions"
 import { Button } from "@/components/ui/button"
@@ -57,41 +56,36 @@ export function AddSupporterForm() {
   }, [state, toast]);
 
   return (
-    <Card>
-      <form ref={formRef} action={formAction}>
-        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">الاسم</Label>
-            <Input id="name" name="name" required className="text-right" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="surname">اللقب</Label>
-            <Input id="surname" name="surname" required className="text-right" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="age">العمر</Label>
-            <Input id="age" name="age" type="number" required className="text-right" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="voterNumber">رقم الناخب</Label>
-            <Input id="voterNumber" name="voterNumber" required className="text-right" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber">رقم الهاتف</Label>
-            <Input id="phoneNumber" name="phoneNumber" type="tel" required className="text-right" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="pollingCenter">مركز الاقتراع</Label>
-            <Input id="pollingCenter" name="pollingCenter" required className="text-right" />
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col gap-4 pt-6">
-          <SubmitButton />
-           <Button variant="link" asChild>
-            <Link href="/">العودة إلى صفحة البحث</Link>
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+    <form ref={formRef} action={formAction}>
+      <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="name">الاسم</Label>
+          <Input id="name" name="name" required className="text-right" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="surname">اللقب</Label>
+          <Input id="surname" name="surname" required className="text-right" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="age">العمر</Label>
+          <Input id="age" name="age" type="number" required className="text-right" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="voterNumber">رقم الناخب</Label>
+          <Input id="voterNumber" name="voterNumber" required className="text-right" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phoneNumber">رقم الهاتف</Label>
+          <Input id="phoneNumber" name="phoneNumber" type="tel" required className="text-right" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="pollingCenter">مركز الاقتراع</Label>
+          <Input id="pollingCenter" name="pollingCenter" required className="text-right" />
+        </div>
+      </CardContent>
+      <CardFooter className="flex-col gap-4 pt-6">
+        <SubmitButton />
+      </CardFooter>
+    </form>
   )
 }

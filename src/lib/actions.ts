@@ -1,8 +1,16 @@
 "use server"
 
 import { z } from "zod"
-import { findSupporterByVoterNumber, addSupporter as addSupporterToDb, type Supporter } from "@/lib/data"
-import { redirect } from "next/navigation"
+import { 
+  findSupporterByVoterNumber, 
+  addSupporter as addSupporterToDb, 
+  addPendingSupporter,
+  getPendingSupporters as getPendingSupportersFromDb,
+  approveSupporter as approveSupporterInDb,
+  rejectSupporter as rejectSupporterInDb,
+  type Supporter 
+} from "@/lib/data"
+import { revalidatePath } from "next/cache"
 
 export type SearchState = {
   id?: number,
@@ -127,6 +135,7 @@ export async function addSupporter(prevState: AddSupporterState, formData: FormD
       }
     }
     await addSupporterToDb(validatedFields.data);
+    revalidatePath('/admin/add');
     return {
       message: `تمت إضافة "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.`
     }
@@ -154,22 +163,48 @@ export async function submitSupporterRequest(prevState: SupporterRequestState, f
   }
   
   try {
-    const existingSupporter = await findSupporterByVoterNumber(validatedFields.data.voterNumber);
-    if(existingSupporter) {
-      return {
-        error: "أنت مسجل بالفعل كمؤيد. شكراً لدعمك!"
-      }
-    }
-    
-    // In a real application, you would save this to a "pending" collection in your database.
-    console.log("New supporter request received:", validatedFields.data);
-
+    await addPendingSupporter(validatedFields.data);
     return {
       message: `شكراً لك، ${validatedFields.data.name}. لقد تم إرسال طلبك بنجاح للمراجعة.`
     }
-  } catch(e) {
+  } catch(e: any) {
+    if (e.message.includes("already exists")) {
+       return {
+        error: "أنت مسجل بالفعل كمؤيد أو طلبك قيد المراجعة. شكراً لك!"
+      }
+    }
     return {
       error: "حدث خطأ غير متوقع في الخادم. يرجى المحاولة مرة أخرى."
     }
+  }
+}
+
+export async function getPendingSupporters() {
+  return await getPendingSupportersFromDb();
+}
+
+
+export type RequestActionState = {
+  error?: string | null;
+  message?: string | null;
+}
+
+export async function approveSupporter(voterNumber: string): Promise<RequestActionState> {
+  try {
+    const approved = await approveSupporterInDb(voterNumber);
+    revalidatePath('/admin/requests');
+    return { message: `تمت الموافقة على ${approved.name} ${approved.surname}.` };
+  } catch (error) {
+    return { error: 'فشلت عملية الموافقة.' };
+  }
+}
+
+export async function rejectSupporter(voterNumber: string): Promise<RequestActionState> {
+  try {
+    await rejectSupporterInDb(voterNumber);
+    revalidatePath('/admin/requests');
+    return { message: 'تم رفض الطلب بنجاح.' };
+  } catch (error) {
+    return { error: 'فشلت عملية الرفض.' };
   }
 }
