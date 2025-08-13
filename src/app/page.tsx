@@ -21,7 +21,7 @@ export default function Home() {
             </Link>
         </Button>
         <Button variant="outline" asChild>
-            <Link href="/admin/login">
+            <Link href="/login">
             <LogIn />
             تسجيل دخول المسؤول
             </Link>

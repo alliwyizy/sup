@@ -63,7 +63,7 @@ export function LoginForm() {
   }, [state, toast, router]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
+    <form ref={formRef} action={formAction}>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">البريد الإلكتروني</Label>
