@@ -1,3 +1,4 @@
+
 export interface Supporter {
   voterNumber: string;
   name: string;
@@ -9,6 +10,33 @@ export interface Supporter {
   registrationCenter: string;
   pollingCenter: string;
 }
+
+// This simulates a general database of all voters
+const generalVoterDatabase: Supporter[] = [
+  {
+    voterNumber: '11112222',
+    name: 'علي',
+    surname: 'خالد',
+    age: 40,
+    gender: "ذكر",
+    phoneNumber: '07711111111',
+    educationalAttainment: "بكالوريوس",
+    registrationCenter: "مركز تسجيل الرصافة",
+    pollingCenter: 'مدرسة دجلة',
+  },
+   {
+    voterNumber: '33334444',
+    name: 'نور',
+    surname: 'الهدى',
+    age: 28,
+    gender: "انثى",
+    phoneNumber: '07822222222',
+    educationalAttainment: "ماجستير",
+    registrationCenter: "مركز تسجيل الكرخ",
+    pollingCenter: 'إعدادية بغداد للبنات',
+  },
+];
+
 
 const supporters: Supporter[] = [
   {
@@ -71,16 +99,24 @@ const pendingSupporters: Supporter[] = [
     }
 ];
 
+export async function findInGeneralVoterDatabase(voterNumber: string): Promise<Supporter | undefined> {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return generalVoterDatabase.find(v => v.voterNumber === voterNumber);
+}
 
-export async function findSupporterByVoterNumber(voterNumber: string): Promise<Supporter | undefined> {
-  // Simulate network delay for a more realistic loading state
+
+export async function findSupporterByVoterNumber(voterNumber: string, checkPending = false): Promise<Supporter | undefined> {
   await new Promise(resolve => setTimeout(resolve, 750));
   const supporter = supporters.find(s => s.voterNumber === voterNumber);
-  return supporter;
+  if (supporter) return supporter;
+  if (checkPending) {
+    const pending = pendingSupporters.find(s => s.voterNumber === voterNumber);
+    return pending;
+  }
+  return undefined;
 }
 
 export async function addSupporter(supporter: Supporter): Promise<Supporter> {
-  // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   supporters.push(supporter);
   return supporter;
@@ -88,7 +124,6 @@ export async function addSupporter(supporter: Supporter): Promise<Supporter> {
 
 export async function addPendingSupporter(supporter: Supporter): Promise<Supporter> {
     await new Promise(resolve => setTimeout(resolve, 500));
-    // check if user is already a supporter or pending
     if (supporters.find(s => s.voterNumber === supporter.voterNumber) || pendingSupporters.find(s => s.voterNumber === supporter.voterNumber)) {
         throw new Error("Supporter already exists or is pending approval.");
     }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useFormStatus } from "react-dom"
@@ -5,6 +6,8 @@ import { useActionState } from "react"
 import { Loader2, Send } from "lucide-react"
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+
 
 import { submitSupporterRequest, type SupporterRequestState } from "@/lib/actions"
 import { Button } from "@/components/ui/button"
@@ -41,10 +44,10 @@ function SubmitButton() {
   )
 }
 
-export function JoinForm() {
+export function JoinForm({ voterNumber }: { voterNumber: string }) {
   const [state, formAction] = useActionState(submitSupporterRequest, initialState)
   const { toast } = useToast()
-  const formRef = React.useRef<HTMLFormElement>(null)
+  const router = useRouter();
 
   React.useEffect(() => {
     if (state?.error) {
@@ -59,16 +62,20 @@ export function JoinForm() {
         title: "تم إرسال الطلب بنجاح",
         description: state.message,
       });
-      formRef.current?.reset();
+      // Redirect to home page on success
+      router.push('/');
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
   return (
-    <form ref={formRef} action={formAction}>
+    <form action={formAction}>
+       {/* Hidden input for voterNumber */}
+      <input type="hidden" name="voterNumber" value={voterNumber} />
+      
       <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="voterNumber">رقم الناخب (8 أرقام)</Label>
-          <Input id="voterNumber" name="voterNumber" required className="text-right" maxLength={8} />
+         <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="voterNumber">رقم الناخب</Label>
+            <Input id="voterNumber" name="voterNumber" required className="text-right" maxLength={8} value={voterNumber} readOnly disabled />
         </div>
         <div className="space-y-2">
           <Label htmlFor="name">الاسم</Label>

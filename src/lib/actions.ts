@@ -1,3 +1,4 @@
+
 "use server"
 
 import { z } from "zod"
@@ -8,6 +9,7 @@ import {
   getPendingSupporters as getPendingSupportersFromDb,
   approveSupporter as approveSupporterInDb,
   rejectSupporter as rejectSupporterInDb,
+  findInGeneralVoterDatabase,
   type Supporter 
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
@@ -181,6 +183,62 @@ export async function submitSupporterRequest(prevState: SupporterRequestState, f
     }
   }
 }
+
+export type VoterCheckState = {
+  voterNumber?: string;
+  prefilledData?: Partial<Supporter> | null;
+  error?: string | null;
+  message?: string | null;
+  success?: boolean;
+};
+
+export async function checkVoter(
+  prevState: VoterCheckState,
+  formData: FormData
+): Promise<VoterCheckState> {
+    const validatedFields = VoterSchema.safeParse({
+        voterNumber: formData.get("voterNumber"),
+    });
+
+    if (!validatedFields.success) {
+        return {
+        error: validatedFields.error.flatten().fieldErrors.voterNumber?.[0],
+        };
+    }
+
+    const { voterNumber } = validatedFields.data;
+
+    // Check if already an approved or pending supporter
+    const existingSupporter = await findSupporterByVoterNumber(voterNumber, true);
+    if (existingSupporter) {
+        return {
+            error: "أنت مسجل بالفعل كمؤيد أو طلبك قيد المراجعة. شكراً لك!",
+            voterNumber: voterNumber,
+        };
+    }
+
+    // Check in the general database
+    const generalData = await findInGeneralVoterDatabase(voterNumber);
+
+    // If not found in general DB, allow manual entry.
+    if (!generalData) {
+      return {
+        success: true,
+        voterNumber: voterNumber,
+        prefilledData: null,
+        message: "لم يتم العثور على بياناتك. يرجى إدخال معلوماتك يدويًا."
+      };
+    }
+
+    // This part is not requested by the user, if the user exists, they can't submit.
+    // The user just said "if the voter number is not found... allow manual entry"
+    // I will interpret this as an error if found.
+    return {
+      error: "رقم الناخب هذا موجود بالفعل. لا يمكن تقديم طلب جديد.",
+      voterNumber,
+    }
+}
+
 
 export async function getPendingSupporters() {
   return await getPendingSupportersFromDb();
