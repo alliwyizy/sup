@@ -3,7 +3,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { useActionState, useState, useEffect } from "react";
+import { useActionState, useState, useEffect, useTransition } from "react";
 import { Loader2, Save } from "lucide-react";
 import * as React from "react";
 
@@ -97,6 +97,15 @@ export function EditSupporterForm({
     }
   }, [state, toast, onOpenChange, onSuccess]);
 
+  // Set default form values when supporter changes
+  const formRef = React.useRef<HTMLFormElement>(null);
+  React.useEffect(() => {
+    if (supporter && formRef.current) {
+        formRef.current.reset();
+    }
+  }, [supporter]);
+
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
@@ -106,14 +115,13 @@ export function EditSupporterForm({
             قم بتحديث معلومات المؤيد أدناه. انقر على حفظ عند الانتهاء.
           </DialogDescription>
         </DialogHeader>
-        <form action={formAction} className="space-y-4 py-4">
-          <input type="hidden" name="auditStatus" defaultValue={supporter.auditStatus} />
+        <form ref={formRef} action={formAction} className="space-y-4 py-4">
+          <input type="hidden" name="voterNumber" defaultValue={supporter.voterNumber} />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="voterNumber-edit">رقم الناخب</Label>
               <Input
                 id="voterNumber-edit"
-                name="voterNumber"
                 defaultValue={supporter.voterNumber}
                 readOnly
                 disabled
@@ -213,3 +221,5 @@ export function EditSupporterForm({
     </Dialog>
   );
 }
+
+    

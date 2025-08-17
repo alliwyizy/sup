@@ -209,8 +209,9 @@ export async function updateSupporter(prevState: FormState, formData: FormData):
     await updateSupporterInDb(validatedFields.data);
     revalidatePath('/admin/dashboard');
     return { message: `تم تحديث بيانات "${validatedFields.data.fullName} ${validatedFields.data.surname}" بنجاح.` };
-  } catch (e: any) {
-    return { error: e.message || "فشل تحديث بيانات المؤيد." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشل تحديث بيانات المؤيد.";
+    return { error };
   }
 }
 
@@ -219,8 +220,9 @@ export async function deleteSupporter(voterNumber: string): Promise<FormState> {
         await deleteSupporterInDb(voterNumber);
         revalidatePath('/admin/dashboard');
         return { message: "تم حذف المؤيد بنجاح." };
-    } catch(e: any) {
-        return { error: e.message || "فشلت عملية الحذف." };
+    } catch (e) {
+        const error = e instanceof Error ? e.message : "فشلت عملية الحذف.";
+        return { error };
     }
 }
 
@@ -247,8 +249,9 @@ export async function submitJoinRequest(prevState: FormState, formData: FormData
 
     await addJoinRequest(validatedFields.data);
     return { message: "تم إرسال طلب الانضمام بنجاح. ستتم مراجعته من قبل المسؤول." };
-  } catch (e: any) {
-    return { error: e.message || "فشل إرسال طلب الانضمام." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشل إرسال طلب الانضمام.";
+    return { error };
   }
 }
 
@@ -268,8 +271,9 @@ export async function approveJoinRequest(voterNumber: string): Promise<FormState
     revalidatePath('/admin/dashboard');
     
     return { message: "تمت الموافقة على الطلب وإضافة المؤيد بنجاح." };
-  } catch (e: any) {
-    return { error: e.message || "فشلت عملية الموافقة." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشلت عملية الموافقة.";
+    return { error };
   }
 }
 
@@ -279,8 +283,9 @@ export async function denyJoinRequest(voterNumber: string): Promise<FormState> {
     await deleteJoinRequest(voterNumber);
     revalidatePath('/admin/requests');
     return { message: "تم رفض الطلب وحذفه بنجاح." };
-  } catch (e: any) {
-    return { error: e.message || "فشلت عملية الرفض." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشلت عملية الرفض.";
+    return { error };
   }
 }
 
@@ -298,8 +303,9 @@ export async function addReferrer(prevState: FormState, formData: FormData): Pro
     await addReferrerToDb(validatedFields.data);
     revalidatePath('/admin/referrers');
     return { message: `تمت إضافة مدخل البيانات "${validatedFields.data.name}" بنجاح.` };
-  } catch (e: any) {
-    return { error: e.message || "فشل إضافة مدخل البيانات." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشل إضافة مدخل البيانات.";
+    return { error };
   }
 }
 
@@ -308,8 +314,9 @@ export async function deleteReferrer(id: string): Promise<FormState> {
     await deleteReferrerInDb(id);
     revalidatePath('/admin/referrers');
     return { message: "تم حذف مدخل البيانات بنجاح." };
-  } catch(e: any) {
-    return { error: e.message || "فشلت عملية حذف مدخل البيانات." };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : "فشلت عملية حذف مدخل البيانات.";
+    return { error };
   }
 }
 
@@ -363,3 +370,5 @@ export async function findVoter(formData: FormData) {
       redirect(`/join?${params.toString()}`);
   }
 }
+
+    

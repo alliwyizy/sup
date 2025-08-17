@@ -4,7 +4,7 @@
 import { Loader2, Trash2 } from "lucide-react";
 import * as React from "react";
 
-import { deleteSupporter, type FormState } from "@/lib/actions";
+import { deleteSupporter } from "@/lib/actions";
 import type { Supporter } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -52,9 +52,9 @@ export function DeleteSupporterDialog({
         description: result.message,
       });
       onSuccess();
-      onOpenChange(false);
     }
-     setIsDeleting(false);
+    onOpenChange(false);
+    setIsDeleting(false);
   };
 
   return (
@@ -73,19 +73,23 @@ export function DeleteSupporterDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>إلغاء</AlertDialogCancel>
           <form onSubmit={handleSubmit}>
-            <Button type="submit" variant="destructive" disabled={isDeleting}>
-              {isDeleting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <Trash2 className="ml-2 h-5 w-5" />
-                  حذف بالتأكيد
-                </>
-              )}
-            </Button>
+            <AlertDialogAction asChild>
+                <Button type="submit" variant="destructive" disabled={isDeleting}>
+                {isDeleting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                    <>
+                    <Trash2 className="ml-2 h-5 w-5" />
+                    حذف بالتأكيد
+                    </>
+                )}
+                </Button>
+            </AlertDialogAction>
           </form>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
+
+    

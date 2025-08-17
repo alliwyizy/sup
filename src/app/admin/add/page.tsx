@@ -104,8 +104,8 @@ export default function AddSupporterPage() {
             title: "تمت الإضافة بنجاح",
             description: state.message,
         });
-        // Redirect to find voter page after successful submission
-        router.push(isAdmin ? '/admin/find-voter' : `/admin/find-voter?ref=${referrerNameParam}`);
+        const redirectUrl = isAdmin ? '/admin/find-voter' : `/admin/find-voter?ref=${referrerNameParam}`;
+        router.push(redirectUrl);
         }
     }, [state, toast, router, isAdmin, referrerNameParam]);
     
@@ -271,3 +271,5 @@ export default function AddSupporterPage() {
     </div>
   );
 }
+
+    

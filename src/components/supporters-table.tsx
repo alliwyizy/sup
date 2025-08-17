@@ -47,43 +47,36 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [selectedSupporter, setSelectedSupporter] = React.useState<Supporter | null>(null);
   
-  const [localData, setLocalData] = React.useState(data);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل', auditStatus: 'الكل' });
   const [currentPage, setCurrentPage] = React.useState(1);
-
-  React.useEffect(() => {
-    setLocalData(data);
-  }, [data]);
-
-  const handleEdit = (supporter: Supporter) => {
-    setSelectedSupporter(supporter);
-    setEditDialogOpen(true);
-  };
-  
-  const handleDelete = (supporter: Supporter) => {
-    setSelectedSupporter(supporter);
-    setDeleteDialogOpen(true);
-  };
   
   const filteredData = React.useMemo(() => {
-    setCurrentPage(1); // Reset to first page on filter change
-    return localData
-      .filter(supporter => {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-          supporter.fullName.toLowerCase().includes(searchLower) ||
-          supporter.surname.toLowerCase().includes(searchLower) ||
-          supporter.voterNumber.includes(searchTerm) ||
-          supporter.phoneNumber.includes(searchTerm)
-        );
-      })
-      .filter(supporter => 
-        (filters.education === 'الكل' || supporter.education === filters.education) &&
-        (filters.gender === 'الكل' || supporter.gender === filters.gender) &&
-        (filters.auditStatus === 'الكل' || supporter.auditStatus === filters.auditStatus)
+    let filtered = data;
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(supporter =>
+        supporter.fullName.toLowerCase().includes(searchLower) ||
+        supporter.surname.toLowerCase().includes(searchLower) ||
+        supporter.voterNumber.includes(searchTerm) ||
+        supporter.phoneNumber.includes(searchTerm)
       );
-  }, [localData, searchTerm, filters]);
+    }
+    if (filters.education !== 'الكل') {
+      filtered = filtered.filter(supporter => supporter.education === filters.education);
+    }
+    if (filters.gender !== 'الكل') {
+      filtered = filtered.filter(supporter => supporter.gender === filters.gender);
+    }
+    if (isAdmin && filters.auditStatus !== 'الكل') {
+        filtered = filtered.filter(supporter => supporter.auditStatus === filters.auditStatus);
+    }
+    return filtered;
+  }, [data, searchTerm, filters, isAdmin]);
+  
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters]);
 
   const paginatedData = React.useMemo(() => {
     const startIndex = (currentPage - 1) * PAGE_SIZE;
@@ -96,14 +89,19 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
       setFilters(prev => ({ ...prev, [filterName]: value }));
   };
   
-  const handleSuccess = (type: 'edit' | 'delete', voterNumber?: string) => {
-    if (type === 'delete' && voterNumber) {
-        setLocalData(prev => prev.filter(s => s.voterNumber !== voterNumber));
-    } else {
-        // for edit, just refetch all data
-        onDataChange();
-    }
-  }
+  const handleEdit = (supporter: Supporter) => {
+    setSelectedSupporter(supporter);
+    setEditDialogOpen(true);
+  };
+  
+  const handleDelete = (supporter: Supporter) => {
+    setSelectedSupporter(supporter);
+    setDeleteDialogOpen(true);
+  };
+  
+  const handleSuccess = () => {
+    onDataChange();
+  };
   
   const handleExport = () => {
     const exportData = filteredData.map(s => ({
@@ -135,15 +133,20 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
     }
   }
 
-
   const tableHeadersBase = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
-    "التحصيل الدراسي", "حالة التدقيق", "مركز التسجيل", "مركز الاقتراع", "رقم المركز"
+    "التحصيل الدراسي"
   ];
   
-  const tableHeaders = isAdmin 
-    ? [...tableHeadersBase, "أضيف بواسطة", "إجراءات"]
-    : [...tableHeadersBase, "إجراءات"];
+  let tableHeaders = [...tableHeadersBase];
+  if (isAdmin) {
+    tableHeaders.push("حالة التدقيق");
+  }
+  tableHeaders.push("مركز التسجيل", "مركز الاقتراع", "رقم المركز");
+  if (isAdmin) {
+    tableHeaders.push("أضيف بواسطة");
+  }
+  tableHeaders.push("إجراءات");
 
 
   if (loading) {
@@ -246,9 +249,11 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 <TableCell className="text-center">{supporter.gender}</TableCell>
                 <TableCell dir="ltr" className="text-center">{supporter.phoneNumber}</TableCell>
                 <TableCell className="text-center">{supporter.education}</TableCell>
-                <TableCell className="text-center">
-                    <Badge variant={getAuditStatusVariant(supporter.auditStatus)}>{supporter.auditStatus}</Badge>
-                </TableCell>
+                {isAdmin && 
+                    <TableCell className="text-center">
+                        <Badge variant={getAuditStatusVariant(supporter.auditStatus)}>{supporter.auditStatus}</Badge>
+                    </TableCell>
+                }
                 <TableCell className="text-center">{supporter.registrationCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenterNumber}</TableCell>
@@ -322,16 +327,18 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 supporter={selectedSupporter}
                 isOpen={isEditDialogOpen}
                 onOpenChange={setEditDialogOpen}
-                onSuccess={() => handleSuccess('edit')}
+                onSuccess={handleSuccess}
             />
             <DeleteSupporterDialog
                 supporter={selectedSupporter}
                 isOpen={isDeleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
-                onSuccess={() => handleSuccess('delete', selectedSupporter.voterNumber)}
+                onSuccess={handleSuccess}
             />
          </>
       )}
     </>
   );
 }
+
+    
