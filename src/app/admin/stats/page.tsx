@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog } from "lucide-react";
+import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog, CheckCircle, AlertCircle, HelpCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
 
@@ -77,7 +77,9 @@ export default function StatsPage() {
         total: 0,
         male: 0,
         female: 0,
-        avgAge: 0,
+        audited: 0,
+        notAudited: 0,
+        auditIssue: 0,
         educationDistribution: [],
         genderDistribution: [],
         referrerDistribution: [],
@@ -103,8 +105,10 @@ export default function StatsPage() {
     const total = supporters.length;
     const male = supporters.filter((s) => s.gender === "ذكر").length;
     const female = total - male;
-    const totalAge = supporters.reduce((acc, s) => acc + s.age, 0);
-    const avgAge = total > 0 ? Math.round(totalAge / total) : 0;
+
+    const audited = supporters.filter(s => s.auditStatus === 'تم التدقيق').length;
+    const notAudited = supporters.filter(s => s.auditStatus === 'لم يتم التدقيق').length;
+    const auditIssue = supporters.filter(s => s.auditStatus === 'مشكلة في التدقيق').length;
     
     const educationDistribution = countAndSort('education', Infinity);
     const topSurnames = countAndSort('surname', 20);
@@ -119,7 +123,7 @@ export default function StatsPage() {
     ];
     
 
-    return { total, male, female, avgAge, educationDistribution, genderDistribution, referrerDistribution, topSurnames, topPollingCenters, topRegistrationCenters };
+    return { total, male, female, audited, notAudited, auditIssue, educationDistribution, genderDistribution, referrerDistribution, topSurnames, topPollingCenters, topRegistrationCenters };
   }, [supporters]);
 
   return (
@@ -194,36 +198,38 @@ export default function StatsPage() {
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">عدد الذكور</CardTitle>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground"><path d="M15 7a5 5 0 1 1-10 0"/><path d="M19 21v-4a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v4"/></svg>
+                <CardTitle className="text-sm font-medium">تم التدقيق</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">{stats.male}</div>
+                <div className="text-2xl font-bold">{stats.audited}</div>
                 <p className="text-xs text-muted-foreground">
-                    {stats.total > 0 ? `${((stats.male / stats.total) * 100).toFixed(1)}%` : '0%'} من الإجمالي
+                    {stats.total > 0 ? `${((stats.audited / stats.total) * 100).toFixed(1)}%` : '0%'} من الإجمالي
                 </p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">عدد الإناث</CardTitle>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground"><path d="M12 21a5 5 0 0 0-10 0"/><path d="M19 21v-4a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v4"/><path d="M17 7a5 5 0 0 0-10 0"/></svg>
+                <CardTitle className="text-sm font-medium">لم يتم التدقيق</CardTitle>
+                <HelpCircle className="h-4 w-4 text-yellow-500" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">{stats.female}</div>
+                <div className="text-2xl font-bold">{stats.notAudited}</div>
                  <p className="text-xs text-muted-foreground">
-                    {stats.total > 0 ? `${((stats.female / stats.total) * 100).toFixed(1)}%` : '0%'} من الإجمالي
+                    {stats.total > 0 ? `${((stats.notAudited / stats.total) * 100).toFixed(1)}%` : '0%'} من الإجمالي
                 </p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">متوسط العمر</CardTitle>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <CardTitle className="text-sm font-medium">مشكلة في التدقيق</CardTitle>
+                <AlertCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">{stats.avgAge} سنة</div>
-                <p className="text-xs text-muted-foreground">متوسط عمر المؤيدين</p>
+                <div className="text-2xl font-bold">{stats.auditIssue}</div>
+                <p className="text-xs text-muted-foreground">
+                    {stats.total > 0 ? `${((stats.auditIssue / stats.total) * 100).toFixed(1)}%` : '0%'} من الإجمالي
+                </p>
                 </CardContent>
             </Card>
             </div>
