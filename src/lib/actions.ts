@@ -15,8 +15,10 @@ import {
   addReferrer as addReferrerToDb,
   deleteReferrer as deleteReferrerInDb,
   findReferrerByName,
+  findVoterInMainDb,
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation";
 
 // #region Schemas
 const SupporterSchema = z.object({
@@ -305,5 +307,54 @@ export async function deleteReferrer(id: string): Promise<FormState> {
     return { message: "تم حذف مدخل البيانات بنجاح." };
   } catch(e: any) {
     return { error: e.message || "فشلت عملية حذف مدخل البيانات." };
+  }
+}
+
+// New action to find voter in the main DB
+export async function findVoter(formData: FormData) {
+  const validatedFields = VoterSchema.safeParse({
+    voterNumber: formData.get("voterNumber"),
+  });
+  const referrerName = formData.get("ref") as string | null;
+  const source = formData.get("source") as 'admin' | 'public';
+
+
+  if (!validatedFields.success) {
+    // This should be handled client-side, but as a fallback
+    return redirect(source === 'admin' ? '/admin/find-voter?error=invalid' : '/find-voter?error=invalid');
+  }
+
+  const { voterNumber } = validatedFields.data;
+
+  // Check if supporter already exists
+  const existingSupporter = await findSupporterByVoterNumber(voterNumber);
+  if (existingSupporter) {
+      const redirectUrl = source === 'admin' ? `/admin/find-voter?error=exists` : `/find-voter?error=exists`;
+      return redirect(referrerName ? `${redirectUrl}&ref=${referrerName}` : redirectUrl);
+  }
+
+
+  const voter = await findVoterInMainDb(voterNumber);
+
+  const params = new URLSearchParams();
+  params.set('voterNumber', voterNumber);
+  
+  if(referrerName) {
+      params.set('ref', referrerName);
+  }
+
+  if (voter) {
+    params.set('fullName', voter.fullName);
+    params.set('surname', voter.surname);
+    params.set('birthYear', voter.birthYear.toString());
+    params.set('gender', voter.gender);
+  } else {
+    params.set('notFound', 'true');
+  }
+
+  if (source === 'admin') {
+      redirect(`/admin/add?${params.toString()}`);
+  } else {
+      redirect(`/join?${params.toString()}`);
   }
 }

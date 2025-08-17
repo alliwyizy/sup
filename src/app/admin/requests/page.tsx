@@ -55,7 +55,7 @@ export default function RequestsPage() {
                     </Link>
                 </Button>
                 <Button asChild>
-                    <Link href="/admin/add">
+                    <Link href="/admin/find-voter">
                         <Plus className="ml-2 h-4 w-4" />
                         إضافة مؤيد
                     </Link>

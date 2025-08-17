@@ -1,18 +1,22 @@
 
 
-export interface Supporter {
+export interface BaseVoter {
   voterNumber: string;
   fullName: string;
   surname: string;
   birthYear: number;
-  age: number;
   gender: 'ذكر' | 'انثى';
+}
+
+
+export interface Supporter extends BaseVoter {
+  age: number;
   phoneNumber: string;
   education: 'امي' | 'يقرا ويكتب' | 'ابتدائية' | 'متوسطة' | 'اعدادية' | 'طالب جامعة' | 'دبلوم' | 'بكالوريوس' | 'ماجستير' | 'دكتوراة';
   registrationCenter: string;
   pollingCenter: string;
   pollingCenterNumber: string;
-  referrerName: string; // Added this
+  referrerName: string; 
 }
 
 export type JoinRequest = Omit<Supporter, 'age' | 'referrerName'>;
@@ -23,6 +27,17 @@ export interface Referrer {
     // In a real app, you'd store a hashed password
     password: string; 
 }
+
+// This is the new comprehensive voter database
+const allVoters: BaseVoter[] = [
+    { voterNumber: '19850101', fullName: 'أحمد محمد علي', surname: 'المحمد', birthYear: 1985, gender: 'ذكر' },
+    { voterNumber: '19920515', fullName: 'فاطمة عبدالله حسين', surname: 'علي', birthYear: 1992, gender: 'انثى' },
+    { voterNumber: '19900303', fullName: 'علي حسن كاظم', surname: 'الجنابي', birthYear: 1990, gender: 'ذكر' },
+    { voterNumber: '19881120', fullName: 'زينب جاسم محمد', surname: 'العبيدي', birthYear: 1988, gender: 'انثى' },
+    { voterNumber: '19760710', fullName: 'خالد وليد سعيد', surname: 'الدليمي', birthYear: 1976, gender: 'ذكر' },
+    { voterNumber: '20010228', fullName: 'نور صباح ياسين', surname: 'الساعدي', birthYear: 2001, gender: 'انثى' },
+    { voterNumber: '19950905', fullName: 'يوسف ابراهيم خليل', surname: 'الجبوري', birthYear: 1995, gender: 'ذكر' },
+];
 
 
 // Initial mock data
@@ -77,6 +92,12 @@ let joinRequests: JoinRequest[] = [
     pollingCenterNumber: '101010',
   },
 ];
+
+// New function to search the main voter DB
+export async function findVoterInMainDb(voterNumber: string): Promise<BaseVoter | undefined> {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  return allVoters.find(v => v.voterNumber === voterNumber);
+}
 
 
 // Supporter Functions

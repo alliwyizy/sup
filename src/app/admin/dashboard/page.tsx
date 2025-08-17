@@ -80,7 +80,7 @@ export default function DashboardPage() {
                     </>
                 )}
                 <Button asChild>
-                    <Link href={isAdmin ? "/admin/add" : `/admin/add?ref=${referrerName}`}>
+                    <Link href={isAdmin ? "/admin/find-voter" : `/admin/find-voter?ref=${referrerName}`}>
                         <Plus className="ml-2 h-4 w-4" />
                         إضافة مؤيد
                     </Link>

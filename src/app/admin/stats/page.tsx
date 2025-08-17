@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams } from "next/navigation";
 
 type EducationDistribution = { name: string; total: number };
 type GenderDistribution = { name: string; value: number };
@@ -28,6 +29,9 @@ export default function StatsPage() {
   const [referrers, setReferrers] = React.useState<Referrer[]>([]);
   const [requestCount, setRequestCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
+  const searchParams = useSearchParams();
+  const referrerName = searchParams.get('ref');
+  const isAdmin = !referrerName;
 
   React.useEffect(() => {
     async function fetchData() {
@@ -121,7 +125,7 @@ export default function StatsPage() {
                 </Link>
             </Button>
           <Button asChild>
-            <Link href="/admin/add">
+            <Link href={isAdmin ? "/admin/find-voter" : `/admin/find-voter?ref=${referrerName}`}>
               <Plus className="ml-2 h-4 w-4" />
               إضافة مؤيد
             </Link>
