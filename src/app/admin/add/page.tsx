@@ -20,7 +20,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 
 const initialState: FormState = {
@@ -161,7 +160,6 @@ export default function AddSupporterPage() {
                         العودة للرئيسية
                     </Link>
                 </Button>
-                <ThemeToggle />
             </div>
        </header>
        <main className="flex flex-1 flex-col items-center justify-center gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

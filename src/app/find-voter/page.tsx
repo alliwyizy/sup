@@ -12,7 +12,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link';
 import * as React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ThemeToggle } from '@/components/theme-toggle';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -43,7 +42,6 @@ export default function PublicFindVoterPage() {
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center p-4 bg-muted/40">
         <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-4">
-            <ThemeToggle />
             <Button asChild variant="ghost">
                 <Link href="/">
                 <ArrowRight className="ml-2 h-4 w-4" />

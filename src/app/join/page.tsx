@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 
 const initialState: FormState = {
@@ -80,7 +79,6 @@ export default function JoinPage() {
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center p-4 bg-muted/40">
          <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-4">
-            <ThemeToggle />
             <Button asChild variant="ghost">
                 <Link href="/">
                     <ArrowRight className="ml-2 h-4 w-4" />

@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteReferrer } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function ReferrersPage() {
   const [data, setData] = React.useState<Referrer[]>([]);
@@ -101,7 +100,6 @@ export default function ReferrersPage() {
               العودة للرئيسية
             </Link>
           </Button>
-          <ThemeToggle />
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

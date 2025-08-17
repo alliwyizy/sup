@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, LogOut, Mail, Users, BarChart, UserCog } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 
 export default function DashboardPage() {
@@ -92,7 +91,6 @@ export default function DashboardPage() {
                         العودة للرئيسية
                     </Link>
                 </Button>
-                <ThemeToggle />
             </div>
        </header>
        <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

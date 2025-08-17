@@ -17,7 +17,6 @@ import Link from "next/link";
 import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog, Sparkles, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { analyzeSupportersData } from "@/ai/flows/analyze-supporters-flow";
@@ -169,7 +168,6 @@ export default function StatsPage() {
               العودة للرئيسية
             </Link>
           </Button>
-          <ThemeToggle />
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

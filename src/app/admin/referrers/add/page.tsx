@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ThemeToggle } from "@/components/theme-toggle";
 
 
 const initialState: FormState = {
@@ -112,7 +111,6 @@ export default function AddReferrerPage() {
                         العودة للرئيسية
                     </Link>
                 </Button>
-                <ThemeToggle />
             </div>
        </header>
        <main className="flex flex-1 flex-col items-center justify-center gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
