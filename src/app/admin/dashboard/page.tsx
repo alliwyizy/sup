@@ -71,10 +71,10 @@ export default function DashboardPage() {
                 <Users />
                 <h2 className="text-2xl font-bold tracking-tight">قائمة المؤيدين</h2>
             </div>
-            <p className="text-muted-foreground">إدارة قائمة المؤيدين المسجلين في قاعدة البيانات.</p>
+            <p className="text-muted-foreground">تصفح، ابحث، وصفِّ بيانات المؤيدين المسجلين في قاعدة البيانات.</p>
         </div>
         <Card className="shadow-sm">
-            <CardContent className="p-0">
+            <CardContent className="p-6">
                  <SupportersTable loading={loading} data={data} onDataChange={handleDataChange} />
             </CardContent>
         </Card>

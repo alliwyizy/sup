@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -24,6 +24,8 @@ import {
 import { EditSupporterForm } from "./edit-supporter-form";
 import { DeleteSupporterDialog } from "./delete-supporter-dialog";
 import { Skeleton } from "./ui/skeleton";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface SupportersTableProps {
   data: Supporter[];
@@ -31,10 +33,18 @@ interface SupportersTableProps {
   loading: boolean;
 }
 
+const PAGE_SIZE = 50;
+const educationLevels = ['الكل', 'امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'];
+const genderLevels = ['الكل', 'ذكر', 'انثى'];
+
 export function SupportersTable({ data, onDataChange, loading }: SupportersTableProps) {
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [selectedSupporter, setSelectedSupporter] = React.useState<Supporter | null>(null);
+  
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل' });
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   const handleEdit = (supporter: Supporter) => {
     setSelectedSupporter(supporter);
@@ -45,6 +55,35 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
     setSelectedSupporter(supporter);
     setDeleteDialogOpen(true);
   };
+  
+  const filteredData = React.useMemo(() => {
+    setCurrentPage(1); // Reset to first page on filter change
+    return data
+      .filter(supporter => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          supporter.fullName.toLowerCase().includes(searchLower) ||
+          supporter.surname.toLowerCase().includes(searchLower) ||
+          supporter.voterNumber.includes(searchTerm) ||
+          supporter.phoneNumber.includes(searchTerm)
+        );
+      })
+      .filter(supporter => 
+        (filters.education === 'الكل' || supporter.education === filters.education) &&
+        (filters.gender === 'الكل' || supporter.gender === filters.gender)
+      );
+  }, [data, searchTerm, filters]);
+
+  const paginatedData = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return filteredData.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filteredData, currentPage]);
+  
+  const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+
+  const handleFilterChange = (filterName: 'education' | 'gender') => (value: string) => {
+      setFilters(prev => ({ ...prev, [filterName]: value }));
+  };
 
   const tableHeaders = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
@@ -54,6 +93,13 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
   if (loading) {
      return (
         <div className="w-full overflow-x-auto rounded-md border">
+            <div className="p-4 space-y-4">
+                <Skeleton className="h-10 w-1/3" />
+                 <div className="flex gap-4">
+                    <Skeleton className="h-10 w-1/4" />
+                    <Skeleton className="h-10 w-1/4" />
+                </div>
+            </div>
             <Table>
                 <TableHeader>
                 <TableRow>
@@ -72,16 +118,40 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
      )
   }
 
-  if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center p-8 text-center text-muted-foreground border-t">
-        <p>لا يوجد بيانات لعرضها حاليًا. قم بإضافة مؤيد جديد للبدء.</p>
-      </div>
-    );
-  }
-
   return (
     <>
+      <div className="flex flex-col gap-4 mb-4">
+        <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input 
+                placeholder="بحث بالاسم، اللقب، رقم الناخب، أو الهاتف..." 
+                className="pl-10 text-right"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+            />
+        </div>
+        <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 space-y-2">
+                <label className="text-sm font-medium">تصفية حسب التحصيل الدراسي:</label>
+                 <Select onValueChange={handleFilterChange('education')} defaultValue="الكل">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {educationLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+             <div className="flex-1 space-y-2">
+                <label className="text-sm font-medium">تصفية حسب الجنس:</label>
+                <Select onValueChange={handleFilterChange('gender')} defaultValue="الكل">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {genderLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
+      </div>
+
       <div className="w-full overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
@@ -92,7 +162,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((supporter) => (
+            {paginatedData.length > 0 ? paginatedData.map((supporter) => (
               <TableRow key={supporter.voterNumber}>
                 <TableCell className="text-center">{supporter.voterNumber}</TableCell>
                 <TableCell className="text-center font-medium">{supporter.fullName}</TableCell>
@@ -127,9 +197,44 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={tableHeaders.length} className="h-24 text-center">
+                  {data.length === 0 ? "لا يوجد بيانات لعرضها حاليًا. قم بإضافة مؤيد جديد للبدء." : "لم يتم العثور على نتائج مطابقة للبحث أو التصفية."}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
+      </div>
+
+       <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="text-sm text-muted-foreground">
+          {filteredData.length} نتيجة
+        </div>
+        <div className="flex items-center space-x-4" dir="ltr">
+            <span className="text-sm text-muted-foreground">
+                صفحة {currentPage} من {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                >
+                    السابق
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                >
+                    التالي
+                </Button>
+            </div>
+        </div>
       </div>
 
        {selectedSupporter && (
