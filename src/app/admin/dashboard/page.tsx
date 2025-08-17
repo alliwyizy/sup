@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { LogOut, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 
@@ -34,18 +34,26 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="w-full max-w-6xl mx-auto grid gap-6">
-        <div className="flex items-center justify-between">
+    <div className="w-full max-w-7xl mx-auto p-4 lg:p-8">
+        <div className="flex items-center justify-between mb-8">
             <div className="space-y-1">
                 <CardTitle className="text-2xl font-bold tracking-tight">قائمة المؤيدين</CardTitle>
                 <CardDescription>إدارة قائمة المؤيدين في قاعدة البيانات.</CardDescription>
             </div>
-            <Button asChild>
-                <Link href="/admin/add">
-                    <PlusCircle className="ml-2 h-4 w-4" />
-                    إضافة مؤيد
-                </Link>
-            </Button>
+            <div className="flex gap-2">
+                 <Button asChild>
+                    <Link href="/admin/add">
+                        <PlusCircle className="ml-2 h-4 w-4" />
+                        إضافة مؤيد
+                    </Link>
+                </Button>
+                 <Button variant="outline" asChild>
+                    <Link href="/">
+                        <LogOut className="ml-2 h-4 w-4" />
+                        تسجيل الخروج
+                    </Link>
+                </Button>
+            </div>
         </div>
         <Card>
             <CardContent className="p-0">

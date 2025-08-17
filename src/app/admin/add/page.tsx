@@ -12,13 +12,15 @@ import { ArrowRight } from "lucide-react";
 
 export default function AddSupporterPage() {
   return (
-    <div className="w-full max-w-2xl">
-         <Button variant="outline" asChild className="mb-4">
-             <Link href="/admin/dashboard">
-                <ArrowRight className="ml-2 h-4 w-4" />
-                العودة إلى القائمة
-             </Link>
-        </Button>
+    <div className="w-full max-w-2xl p-4 lg:p-8">
+         <div className="mb-4">
+            <Button variant="outline" asChild>
+                <Link href="/admin/dashboard">
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                    العودة إلى لوحة التحكم
+                </Link>
+            </Button>
+         </div>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl tracking-tight">
