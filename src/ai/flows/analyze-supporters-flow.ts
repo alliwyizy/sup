@@ -64,6 +64,7 @@ const analyzeSupportersFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
+    // Ensure we always return a string, even if the model returns null.
     return output ?? "لم أتمكن من تحليل البيانات أو العثور على إجابة.";
   }
 );
