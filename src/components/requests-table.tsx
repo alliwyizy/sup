@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Loader2, MoreHorizontal, Pencil, Trash, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,14 +13,6 @@ import {
 } from "@/components/ui/table";
 import type { JoinRequest } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "./ui/skeleton";
 import { approveJoinRequest, denyJoinRequest } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +36,12 @@ interface RequestsTableProps {
 
 export function RequestsTable({ data, onDataChange, loading }: RequestsTableProps) {
   const { toast } = useToast();
+  const [localData, setLocalData] = React.useState(data);
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setLocalData(data);
+  }, [data]);
 
   const handleApprove = async (voterNumber: string) => {
     setIsProcessing(voterNumber);
@@ -53,6 +50,8 @@ export function RequestsTable({ data, onDataChange, loading }: RequestsTableProp
       toast({ variant: "destructive", title: "خطأ", description: result.error });
     } else {
       toast({ title: "نجاح", description: result.message });
+      setLocalData(prev => prev.filter(r => r.voterNumber !== voterNumber));
+      // Optionally call onDataChange if counts in parent need update
       onDataChange();
     }
     setIsProcessing(null);
@@ -65,6 +64,7 @@ export function RequestsTable({ data, onDataChange, loading }: RequestsTableProp
       toast({ variant: "destructive", title: "خطأ", description: result.error });
     } else {
       toast({ title: "نجاح", description: result.message });
+      setLocalData(prev => prev.filter(r => r.voterNumber !== voterNumber));
       onDataChange();
     }
     setIsProcessing(null);
@@ -97,7 +97,7 @@ export function RequestsTable({ data, onDataChange, loading }: RequestsTableProp
      )
   }
 
-  if (data.length === 0) {
+  if (localData.length === 0) {
     return (
       <div className="flex items-center justify-center p-8 text-center text-muted-foreground border-t">
         <p>لا توجد طلبات انضمام معلقة حاليًا.</p>
@@ -117,7 +117,7 @@ export function RequestsTable({ data, onDataChange, loading }: RequestsTableProp
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((request) => (
+            {localData.map((request) => (
               <TableRow key={request.voterNumber}>
                 <TableCell className="text-center">{request.voterNumber}</TableCell>
                 <TableCell className="text-center font-medium">{request.fullName}</TableCell>
@@ -150,7 +150,7 @@ export function RequestsTable({ data, onDataChange, loading }: RequestsTableProp
                                     className="text-red-600 hover:text-red-700 hover:bg-red-100"
                                     disabled={isProcessing === request.voterNumber}
                                 >
-                                    <X className="h-5 w-5" />
+                                    {isProcessing === request.voterNumber ? null : <X className="h-5 w-5" />}
                                     <span className="sr-only">رفض</span>
                                 </Button>
                             </AlertDialogTrigger>

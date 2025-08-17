@@ -3,7 +3,8 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal, Pencil, Trash2, Search } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Search, FileDown } from "lucide-react";
+import * as xlsx from "xlsx";
 import {
   Table,
   TableBody,
@@ -44,9 +45,14 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [selectedSupporter, setSelectedSupporter] = React.useState<Supporter | null>(null);
   
+  const [localData, setLocalData] = React.useState(data);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل' });
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  React.useEffect(() => {
+    setLocalData(data);
+  }, [data]);
 
   const handleEdit = (supporter: Supporter) => {
     setSelectedSupporter(supporter);
@@ -60,7 +66,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   
   const filteredData = React.useMemo(() => {
     setCurrentPage(1); // Reset to first page on filter change
-    return data
+    return localData
       .filter(supporter => {
         const searchLower = searchTerm.toLowerCase();
         return (
@@ -74,7 +80,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
         (filters.education === 'الكل' || supporter.education === filters.education) &&
         (filters.gender === 'الكل' || supporter.gender === filters.gender)
       );
-  }, [data, searchTerm, filters]);
+  }, [localData, searchTerm, filters]);
 
   const paginatedData = React.useMemo(() => {
     const startIndex = (currentPage - 1) * PAGE_SIZE;
@@ -86,6 +92,36 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   const handleFilterChange = (filterName: 'education' | 'gender') => (value: string) => {
       setFilters(prev => ({ ...prev, [filterName]: value }));
   };
+  
+  const handleSuccess = (type: 'edit' | 'delete', voterNumber?: string) => {
+    if (type === 'delete' && voterNumber) {
+        setLocalData(prev => prev.filter(s => s.voterNumber !== voterNumber));
+    } else {
+        // for edit, just refetch all data
+        onDataChange();
+    }
+  }
+  
+  const handleExport = () => {
+    const exportData = filteredData.map(s => ({
+        'رقم الناخب': s.voterNumber,
+        'الاسم الكامل': s.fullName,
+        'اللقب': s.surname,
+        'العمر': s.age,
+        'الجنس': s.gender,
+        'رقم الهاتف': s.phoneNumber,
+        'التحصيل الدراسي': s.education,
+        'مركز التسجيل': s.registrationCenter,
+        'مركز الاقتراع': s.pollingCenter,
+        'رقم المركز': s.pollingCenterNumber,
+        'أضيف بواسطة': s.referrerName,
+    }));
+    const worksheet = xlsx.utils.json_to_sheet(exportData);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, "المؤيدون");
+    xlsx.writeFile(workbook, "supporters_data.xlsx");
+  };
+
 
   const tableHeadersBase = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
@@ -128,14 +164,22 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   return (
     <>
       <div className="flex flex-col gap-4 mb-4">
-        <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-                placeholder="بحث بالاسم، اللقب، رقم الناخب، أو الهاتف..." 
-                className="pl-10 text-right"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-            />
+        <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="بحث بالاسم، اللقب، رقم الناخب، أو الهاتف..." 
+                    className="pl-10 text-right"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                />
+            </div>
+            {isAdmin && (
+                 <Button onClick={handleExport} variant="outline">
+                    <FileDown className="ml-2 h-4 w-4" />
+                    تصدير إلى Excel
+                </Button>
+            )}
         </div>
         <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 space-y-2">
@@ -251,13 +295,13 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 supporter={selectedSupporter}
                 isOpen={isEditDialogOpen}
                 onOpenChange={setEditDialogOpen}
-                onSuccess={onDataChange}
+                onSuccess={() => handleSuccess('edit')}
             />
             <DeleteSupporterDialog
                 supporter={selectedSupporter}
                 isOpen={isDeleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
-                onSuccess={onDataChange}
+                onSuccess={() => handleSuccess('delete', selectedSupporter.voterNumber)}
             />
          </>
       )}

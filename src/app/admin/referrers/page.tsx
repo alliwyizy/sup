@@ -2,13 +2,10 @@
 "use client";
 
 import * as React from "react";
-import { getAllReferrers, type Referrer } from "@/lib/data";
+import { getAllReferrers, type Referrer, getAllJoinRequests } from "@/lib/data";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -33,12 +30,14 @@ export default function ReferrersPage() {
   const [data, setData] = React.useState<Referrer[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState<string | null>(null);
+  const [requestCount, setRequestCount] = React.useState(0);
   const { toast } = useToast();
 
   const handleDataChange = React.useCallback(async () => {
     setLoading(true);
-    const referrers = await getAllReferrers();
+    const [referrers, requests] = await Promise.all([getAllReferrers(), getAllJoinRequests()]);
     setData(referrers);
+    setRequestCount(requests.length);
     setLoading(false);
   }, []);
 
@@ -53,7 +52,7 @@ export default function ReferrersPage() {
         toast({ variant: "destructive", title: "خطأ", description: result.error });
     } else {
         toast({ title: "نجاح", description: result.message });
-        handleDataChange();
+        setData(prev => prev.filter(r => r.id !== id));
     }
     setIsDeleting(null);
   };
@@ -72,11 +71,16 @@ export default function ReferrersPage() {
               قائمة المؤيدين
             </Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/admin/requests">
-              <Mail className="ml-2 h-4 w-4" />
-              طلبات الانضمام
-            </Link>
+          <Button variant="outline" asChild className="relative">
+              <Link href="/admin/requests">
+                  <Mail className="ml-2 h-4 w-4" />
+                  طلبات الانضمام
+                  {requestCount > 0 && (
+                      <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                          {requestCount}
+                      </span>
+                  )}
+              </Link>
           </Button>
           <Button variant="outline" asChild>
             <Link href="/admin/stats">

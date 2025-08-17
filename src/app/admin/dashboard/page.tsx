@@ -3,7 +3,7 @@
 "use client";
 
 import * as React from "react";
-import { getAllSupporters, type Supporter } from "@/lib/data";
+import { getAllSupporters, type Supporter, getAllJoinRequests } from "@/lib/data";
 import { SupportersTable } from "@/components/supporters-table";
 import {
   Card,
@@ -18,6 +18,7 @@ import { useSearchParams } from "next/navigation";
 export default function DashboardPage() {
   const [data, setData] = React.useState<Supporter[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [requestCount, setRequestCount] = React.useState(0);
   const searchParams = useSearchParams();
   const referrerName = searchParams.get('ref');
   const isAdmin = !referrerName;
@@ -34,8 +35,15 @@ export default function DashboardPage() {
   }, [referrerName]);
 
   React.useEffect(() => {
-    handleDataChange();
-  }, [handleDataChange]);
+    async function fetchInitialData() {
+        await handleDataChange();
+        if(isAdmin) {
+            const requests = await getAllJoinRequests();
+            setRequestCount(requests.length);
+        }
+    }
+    fetchInitialData();
+  }, [handleDataChange, isAdmin]);
 
 
   return (
@@ -46,10 +54,15 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
                 {isAdmin && (
                     <>
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild className="relative">
                             <Link href="/admin/requests">
                                 <Mail className="ml-2 h-4 w-4" />
                                 طلبات الانضمام
+                                {requestCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                                        {requestCount}
+                                    </span>
+                                )}
                             </Link>
                         </Button>
                         <Button variant="outline" asChild>

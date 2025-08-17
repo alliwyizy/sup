@@ -3,7 +3,6 @@
 
 import { Loader2, Trash2 } from "lucide-react";
 import * as React from "react";
-import { useFormStatus } from "react-dom";
 
 import { deleteSupporter, type FormState } from "@/lib/actions";
 import type { Supporter } from "@/lib/data";
@@ -20,22 +19,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-function DeleteButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" variant="destructive" disabled={pending}>
-      {pending ? (
-        <Loader2 className="h-5 w-5 animate-spin" />
-      ) : (
-        <>
-          <Trash2 className="ml-2 h-5 w-5" />
-          حذف بالتأكيد
-        </>
-      )}
-    </Button>
-  );
-}
-
 interface DeleteSupporterDialogProps {
   supporter: Supporter;
   isOpen: boolean;
@@ -50,31 +33,29 @@ export function DeleteSupporterDialog({
   onSuccess,
 }: DeleteSupporterDialogProps) {
   const { toast } = useToast();
-  const [formState, setFormState] = React.useState<FormState>({});
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsDeleting(true);
     const result = await deleteSupporter(supporter.voterNumber);
-    setFormState(result);
-  };
-
-  React.useEffect(() => {
-    if (formState.error) {
+    if (result.error) {
       toast({
         variant: "destructive",
         title: "خطأ في الحذف",
-        description: formState.error,
+        description: result.error,
       });
     }
-    if (formState.message) {
+    if (result.message) {
       toast({
         title: "تم الحذف بنجاح",
-        description: formState.message,
+        description: result.message,
       });
       onSuccess();
       onOpenChange(false);
     }
-  }, [formState, toast, onOpenChange, onSuccess]);
-
+     setIsDeleting(false);
+  };
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -84,15 +65,24 @@ export function DeleteSupporterDialog({
           <AlertDialogDescription>
             هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف بيانات المؤيد{" "}
             <span className="font-bold">
-              {supporter.name} {supporter.surname}
+              {supporter.fullName} {supporter.surname}
             </span>{" "}
             بشكل دائم من قاعدة البيانات.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>إلغاء</AlertDialogCancel>
-           <form action={handleSubmit}>
-            <DeleteButton />
+          <form onSubmit={handleSubmit}>
+            <Button type="submit" variant="destructive" disabled={isDeleting}>
+              {isDeleting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <Trash2 className="ml-2 h-5 w-5" />
+                  حذف بالتأكيد
+                </>
+              )}
+            </Button>
           </form>
         </AlertDialogFooter>
       </AlertDialogContent>

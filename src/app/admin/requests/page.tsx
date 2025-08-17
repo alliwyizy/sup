@@ -72,7 +72,7 @@ export default function RequestsPage() {
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <Mail />
-                    <h2 className="text-2xl font-bold tracking-tight">طلبات الانضمام المعلقة</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">طلبات الانضمام المعلقة ({data.length})</h2>
                 </div>
                 <p className="text-muted-foreground">مراجعة وقبول أو رفض طلبات الانضمام الجديدة.</p>
             </div>

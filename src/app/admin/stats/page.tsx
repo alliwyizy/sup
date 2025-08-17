@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { Bar, BarChart as RechartsBarChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell } from "recharts";
-import { getAllSupporters, type Supporter } from "@/lib/data";
+import { getAllSupporters, type Supporter, getAllReferrers, type Referrer, getAllJoinRequests } from "@/lib/data";
 import {
   Card,
   CardContent,
@@ -19,18 +19,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type EducationDistribution = { name: string; total: number };
 type GenderDistribution = { name: string; value: number };
+type ReferrerDistribution = { name: string; total: number };
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
 
 export default function StatsPage() {
   const [supporters, setSupporters] = React.useState<Supporter[]>([]);
+  const [referrers, setReferrers] = React.useState<Referrer[]>([]);
+  const [requestCount, setRequestCount] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const data = await getAllSupporters();
-      setSupporters(data);
+      const [supportersData, referrersData, requestsData] = await Promise.all([
+        getAllSupporters(),
+        getAllReferrers(),
+        getAllJoinRequests(),
+      ]);
+      setSupporters(supportersData);
+      setReferrers(referrersData);
+      setRequestCount(requestsData.length);
       setLoading(false);
     }
     fetchData();
@@ -45,6 +54,7 @@ export default function StatsPage() {
         avgAge: 0,
         educationDistribution: [],
         genderDistribution: [],
+        referrerDistribution: [],
       };
     }
 
@@ -67,8 +77,18 @@ export default function StatsPage() {
       { name: "ذكور", value: male },
       { name: "إناث", value: female },
     ];
+    
+    const referrerCounts = supporters.reduce((acc, s) => {
+      acc[s.referrerName] = (acc[s.referrerName] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
-    return { total, male, female, avgAge, educationDistribution, genderDistribution };
+    const referrerDistribution: ReferrerDistribution[] = Object.entries(referrerCounts)
+      .map(([name, total]) => ({ name, total }))
+      .sort((a, b) => b.total - a.total);
+
+
+    return { total, male, female, avgAge, educationDistribution, genderDistribution, referrerDistribution };
   }, [supporters]);
 
   return (
@@ -83,11 +103,16 @@ export default function StatsPage() {
               قائمة المؤيدين
             </Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/admin/requests">
-              <Mail className="ml-2 h-4 w-4" />
-              طلبات الانضمام
-            </Link>
+          <Button variant="outline" asChild className="relative">
+              <Link href="/admin/requests">
+                  <Mail className="ml-2 h-4 w-4" />
+                  طلبات الانضمام
+                  {requestCount > 0 && (
+                      <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                          {requestCount}
+                      </span>
+                  )}
+              </Link>
           </Button>
           <Button variant="outline" asChild>
                 <Link href="/admin/referrers">
@@ -122,10 +147,7 @@ export default function StatsPage() {
         
         {loading ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
-                <Skeleton className="h-28 w-full" />
+                {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-28 w-full" />)}
             </div>
         ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -176,7 +198,6 @@ export default function StatsPage() {
             </div>
         )}
 
-
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
             <CardHeader>
@@ -200,8 +221,11 @@ export default function StatsPage() {
                             axisLine={false}
                             tickFormatter={(value) => `${value}`}
                         />
-                        <Tooltip />
-                        <Bar dataKey="total" fill="#2270B8" radius={[4, 4, 0, 0]} name="العدد" />
+                        <Tooltip
+                          contentStyle={{ direction: 'rtl' }}
+                          cursor={{ fill: 'hsl(var(--muted))' }}
+                        />
+                        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="العدد" />
                         </RechartsBarChart>
                     </ResponsiveContainer>
                  )}
@@ -232,7 +256,7 @@ export default function StatsPage() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Pie>
-                     <Tooltip formatter={(value, name) => [value, name]} />
+                     <Tooltip formatter={(value, name) => [value, name]} contentStyle={{ direction: 'rtl' }} />
                     <Legend />
                     </RechartsPieChart>
                 </ResponsiveContainer>
@@ -240,6 +264,37 @@ export default function StatsPage() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+            <CardHeader>
+              <CardTitle>أداء مدخلي البيانات</CardTitle>
+              <CardDescription>عدد المؤيدين الذين تمت إضافتهم بواسطة كل مدخل بيانات.</CardDescription>
+            </CardHeader>
+            <CardContent className="pl-2">
+                 {loading ? <Skeleton className="h-[350px] w-full" /> : (
+                    <ResponsiveContainer width="100%" height={350}>
+                        <RechartsBarChart data={stats.referrerDistribution} layout="vertical">
+                        <XAxis type="number" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis
+                            dataKey="name"
+                            type="category"
+                            stroke="#888888"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                            width={80}
+                        />
+                        <Tooltip 
+                          contentStyle={{ direction: 'rtl' }}
+                          cursor={{ fill: 'hsl(var(--muted))' }}
+                        />
+                        <Legend />
+                        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="عدد المؤيدين" />
+                        </RechartsBarChart>
+                    </ResponsiveContainer>
+                 )}
+            </CardContent>
+          </Card>
       </main>
     </div>
   );

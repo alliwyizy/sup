@@ -14,11 +14,25 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, UserPlus, LogOut, Users, Mail, BarChart, UserCog } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { getAllJoinRequests } from "@/lib/data";
 
 export default function AddSupporterPage() {
     const searchParams = useSearchParams();
     const referrerName = searchParams.get('ref');
     const isAdmin = !referrerName;
+    const [requestCount, setRequestCount] = useState(0);
+
+    const fetchRequestCount = useCallback(async () => {
+        if(isAdmin) {
+            const requests = await getAllJoinRequests();
+            setRequestCount(requests.length);
+        }
+    }, [isAdmin]);
+
+    useEffect(() => {
+        fetchRequestCount();
+    }, [fetchRequestCount]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -34,10 +48,15 @@ export default function AddSupporterPage() {
                 </Button>
                 {isAdmin && (
                     <>
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild className="relative">
                             <Link href="/admin/requests">
                                 <Mail className="ml-2 h-4 w-4" />
                                 طلبات الانضمام
+                                {requestCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                                        {requestCount}
+                                    </span>
+                                )}
                             </Link>
                         </Button>
                         <Button variant="outline" asChild>

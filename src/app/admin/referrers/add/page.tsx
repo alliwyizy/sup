@@ -2,12 +2,13 @@
 "use client";
 
 import { useFormStatus } from "react-dom"
-import { useActionState, useEffect, useRef } from "react"
+import { useActionState, useEffect, useRef, useState, useCallback } from "react"
 import { Loader2, UserPlus, ArrowRight, UserCog, Users, Mail, BarChart, LogOut } from "lucide-react"
 import * as React from "react"
 import Link from "next/link";
 
 import { addReferrer, type FormState } from "@/lib/actions"
+import { getAllJoinRequests } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,6 +41,17 @@ export default function AddReferrerPage() {
     const [state, formAction] = useActionState(addReferrer, initialState);
     const { toast } = useToast();
     const formRef = React.useRef<HTMLFormElement>(null);
+    const [requestCount, setRequestCount] = useState(0);
+
+    const fetchRequestCount = useCallback(async () => {
+        const requests = await getAllJoinRequests();
+        setRequestCount(requests.length);
+    }, []);
+
+    useEffect(() => {
+        fetchRequestCount();
+    }, [fetchRequestCount]);
+
 
     React.useEffect(() => {
         if (state?.error) {
@@ -70,10 +82,15 @@ export default function AddReferrerPage() {
                         قائمة المؤيدين
                     </Link>
                 </Button>
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="relative">
                     <Link href="/admin/requests">
                         <Mail className="ml-2 h-4 w-4" />
                         طلبات الانضمام
+                         {requestCount > 0 && (
+                            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                                {requestCount}
+                            </span>
+                        )}
                     </Link>
                 </Button>
                  <Button variant="outline" asChild>
