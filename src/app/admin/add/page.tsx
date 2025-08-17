@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, UserPlus, LogOut, Users, Mail } from "lucide-react";
+import { ArrowRight, UserPlus, LogOut, Users, Mail, BarChart } from "lucide-react";
 
 export default function AddSupporterPage() {
   return (
@@ -28,6 +28,12 @@ export default function AddSupporterPage() {
                     <Link href="/admin/requests">
                         <Mail className="ml-2 h-4 w-4" />
                         طلبات الانضمام
+                    </Link>
+                </Button>
+                 <Button variant="outline" asChild>
+                    <Link href="/admin/stats">
+                        <BarChart className="ml-2 h-4 w-4" />
+                        الإحصائيات
                     </Link>
                 </Button>
                  <Button variant="secondary" asChild>

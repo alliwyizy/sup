@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, LogOut, Mail, Users } from "lucide-react";
+import { Plus, LogOut, Mail, Users, BarChart } from "lucide-react";
 
 
 export default function RequestsPage() {
@@ -42,6 +42,12 @@ export default function RequestsPage() {
                     <Link href="/admin/dashboard">
                         <Users className="ml-2 h-4 w-4" />
                         قائمة المؤيدين
+                    </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                    <Link href="/admin/stats">
+                        <BarChart className="ml-2 h-4 w-4" />
+                        الإحصائيات
                     </Link>
                 </Button>
                 <Button asChild>
