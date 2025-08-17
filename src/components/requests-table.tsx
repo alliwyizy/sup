@@ -22,24 +22,34 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export function RequestsTable({ data }: { data: (Supporter & { referrerName?: string })[] }) {
   const { toast } = useToast();
+  const [optimisticData, setOptimisticData] = React.useState(data);
+
+  React.useEffect(() => {
+    setOptimisticData(data);
+  }, [data]);
 
   const handleAction = React.useCallback(
     async (
       action: (voterNumber: string) => Promise<RequestActionState>,
       voterNumber: string
     ) => {
+      // Optimistic UI Update: remove the item from the list
+      setOptimisticData(prevData => prevData.filter(item => item.voterNumber !== voterNumber));
+      
       const result = await action(voterNumber);
       if (result.error) {
         toast({ variant: "destructive", title: "خطأ", description: result.error });
+        // Revert optimistic update on error
+        setOptimisticData(data);
       }
       if (result.message) {
         toast({ title: "نجاح", description: result.message });
+        // No need to revert, state is now in sync with backend
       }
     },
-    [toast]
+    [toast, data]
   );
   
-  // Create a memoized version of the action handler to avoid re-creating the function on every render.
   const memoizedApprove = React.useCallback(
     (voterNumber: string) => handleAction(approveSupporter, voterNumber),
     [handleAction]
@@ -50,7 +60,7 @@ export function RequestsTable({ data }: { data: (Supporter & { referrerName?: st
   );
 
 
-  if (data.length === 0) {
+  if (optimisticData.length === 0) {
     return (
       <div className="flex items-center justify-center p-8 text-center text-muted-foreground">
         <p>لا توجد طلبات معلقة حاليًا.</p>
@@ -71,7 +81,7 @@ export function RequestsTable({ data }: { data: (Supporter & { referrerName?: st
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((supporter) => (
+          {optimisticData.map((supporter) => (
              <TableRow key={supporter.voterNumber}>
               <TableCell className="font-medium">
                 <div className="flex flex-col">

@@ -34,13 +34,14 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={referrerData} layout="vertical" margin={{ right: 20, left: 30 }}>
+      <BarChart data={referrerData} layout="vertical" margin={{ right: 20, left: 30, top: 20, bottom: 10 }}>
          <XAxis 
             type="number" 
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
+            allowDecimals={false}
          />
         <YAxis
           dataKey="name"
@@ -71,7 +72,7 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
             name="عدد المؤيدين" 
             fill="hsl(var(--primary))" 
             radius={[0, 4, 4, 0]} 
-            background={{ fill: 'hsl(var(--muted))', radius: 4 }}
+            background={{ fill: 'hsl(var(--background))', radius: 4 }}
         />
       </BarChart>
     </ResponsiveContainer>

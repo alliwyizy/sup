@@ -21,21 +21,39 @@ import { Badge } from "@/components/ui/badge";
 
 export function ReferrersTable({ data }: { data: Supporter[] }) {
   const { toast } = useToast();
+  const [optimisticData, setOptimisticData] = React.useState(data);
+
+  React.useEffect(() => {
+    setOptimisticData(data);
+  }, [data]);
 
   const handleAction = React.useCallback(
     async (voterNumber: string) => {
+      // Optimistic UI Update
+      setOptimisticData(prevData =>
+        prevData.map(supporter =>
+          supporter.voterNumber === voterNumber
+            ? { ...supporter, isReferrer: !supporter.isReferrer }
+            : supporter
+        )
+      );
+
       const result = await toggleReferrerStatus(voterNumber);
+
       if (result.error) {
         toast({ variant: "destructive", title: "خطأ", description: result.error });
+        // Revert optimistic update on error
+        setOptimisticData(data);
       }
       if (result.message) {
         toast({ title: "نجاح", description: result.message });
+        // No need to revert, state is now in sync with backend
       }
     },
-    [toast]
+    [toast, data]
   );
 
-  if (data.length === 0) {
+  if (optimisticData.length === 0) {
     return (
       <div className="flex items-center justify-center p-8 text-center text-muted-foreground">
         <p>لا يوجد مؤيدون لإدارتهم حاليًا. قم بإضافة مؤيدين أولاً.</p>
@@ -55,7 +73,7 @@ export function ReferrersTable({ data }: { data: Supporter[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((supporter) => (
+          {optimisticData.map((supporter) => (
             <TableRow key={supporter.voterNumber}>
               <TableCell className="font-medium">
                 {supporter.name} {supporter.surname}
