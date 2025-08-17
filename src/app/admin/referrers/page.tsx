@@ -58,7 +58,7 @@ export default function ReferrersPage() {
     setIsDeleting(null);
   };
 
-  const tableHeaders = ["الاسم", "كلمة المرور (للتوضيح)", "إجراء"];
+  const tableHeaders = ["اسم المستخدم", "كلمة المرور (للتوضيح)", "إجراء"];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -87,7 +87,7 @@ export default function ReferrersPage() {
            <Button asChild>
                 <Link href="/admin/referrers/add">
                     <Plus className="ml-2 h-4 w-4" />
-                    إضافة مُعرّف
+                    إضافة مدخل بيانات
                 </Link>
             </Button>
           <Button variant="secondary" asChild>
@@ -103,10 +103,10 @@ export default function ReferrersPage() {
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                 <UserCog />
-                <h2 className="text-2xl font-bold tracking-tight">إدارة المُعرّفين</h2>
+                <h2 className="text-2xl font-bold tracking-tight">إدارة مدخلي البيانات</h2>
                 </div>
                 <p className="text-muted-foreground">
-                عرض وحذف المُعرّفين (مدخلي البيانات) المسجلين في النظام.
+                عرض وحذف مدخلي البيانات المسجلين في النظام.
                 </p>
             </div>
         </div>
@@ -135,7 +135,7 @@ export default function ReferrersPage() {
                                 <TableCell className="text-center">
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-100" disabled={referrer.id === '1' || isDeleting === referrer.id}>
+                                            <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-100" disabled={referrer.name.toLowerCase() === 'admin' || isDeleting === referrer.id}>
                                                 {isDeleting === referrer.id ? <Loader2 className="animate-spin" /> : <Trash2 className="h-5 w-5" />}
                                                 <span className="sr-only">حذف</span>
                                             </Button>
@@ -144,7 +144,7 @@ export default function ReferrersPage() {
                                             <AlertDialogHeader className="text-right">
                                             <AlertDialogTitle>هل أنت متأكد من الحذف؟</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                هذا الإجراء سيقوم بحذف المُعرّف <span className="font-bold">{referrer.name}</span> بشكل نهائي.
+                                                هذا الإجراء سيقوم بحذف مدخل البيانات <span className="font-bold">{referrer.name}</span> بشكل نهائي.
                                             </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
@@ -161,7 +161,7 @@ export default function ReferrersPage() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={tableHeaders.length} className="h-24 text-center">
-                                    لا يوجد مُعرّفون لعرضهم حاليًا.
+                                    لا يوجد مدخلو بيانات لعرضهم حاليًا.
                                 </TableCell>
                             </TableRow>
                         )}

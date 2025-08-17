@@ -125,11 +125,11 @@ export function AddSupporterForm() {
             </Select>
         </div>
         <div className="space-y-2">
-            <Label htmlFor="referrerName">أضيف بواسطة</Label>
+            <Label htmlFor="referrerName">أضيف بواسطة (مدخل البيانات)</Label>
              {loading ? <Skeleton className="h-10 w-full" /> : (
                 <Select name="referrerName" required>
                     <SelectTrigger id="referrerName">
-                        <SelectValue placeholder="اختر اسم المُعرّف" />
+                        <SelectValue placeholder="اختر اسم مدخل البيانات" />
                     </SelectTrigger>
                     <SelectContent>
                         {referrers.map(r => (

@@ -165,10 +165,18 @@ export async function getAllReferrers(): Promise<Referrer[]> {
     return [...referrers];
 }
 
+export async function findReferrerByName(name: string): Promise<Referrer | undefined> {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return referrers.find(r => r.name.toLowerCase() === name.toLowerCase());
+}
+
 export async function addReferrer(referrerData: Omit<Referrer, 'id'>): Promise<Referrer> {
     await new Promise(resolve => setTimeout(resolve, 500));
     if (referrers.find(r => r.name.toLowerCase() === referrerData.name.toLowerCase())) {
-        throw new Error("اسم المُعرّف هذا مستخدم بالفعل.");
+        throw new Error("اسم المستخدم هذا مستخدم بالفعل.");
+    }
+    if (referrerData.name.toLowerCase() === 'admin' || referrerData.name.toLowerCase() === 'admin@example.com') {
+      throw new Error("لا يمكن استخدام هذا الاسم المحجوز.");
     }
     const newReferrer = { ...referrerData, id: Date.now().toString() };
     referrers.push(newReferrer);
@@ -177,12 +185,13 @@ export async function addReferrer(referrerData: Omit<Referrer, 'id'>): Promise<R
 
 export async function deleteReferrer(id: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 500));
-    if (id === '1') { // Prevent deleting the admin
+    const referrerToDelete = referrers.find(r => r.id === id);
+    if (referrerToDelete?.name.toLowerCase() === 'admin') {
       throw new Error("لا يمكن حذف حساب المسؤول الرئيسي.");
     }
     const index = referrers.findIndex(r => r.id === id);
     if (index === -1) {
-        throw new Error("لم يتم العثور على المُعرّف لحذفه.");
+        throw new Error("لم يتم العثور على مدخل البيانات لحذفه.");
     }
     referrers.splice(index, 1);
 }

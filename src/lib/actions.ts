@@ -14,6 +14,7 @@ import {
   findJoinRequestByVoterNumber,
   addReferrer as addReferrerToDb,
   deleteReferrer as deleteReferrerInDb,
+  findReferrerByName,
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
 
@@ -29,11 +30,11 @@ const SupporterSchema = z.object({
     registrationCenter: z.string().min(1, { message: "اسم مركز التسجيل مطلوب." }),
     pollingCenter: z.string().min(1, { message: "اسم مركز الاقتراع مطلوب." }),
     pollingCenterNumber: z.string().regex(/^\d{6}$/, { message: "رقم مركز الاقتراع يجب أن يتكون من 6 أرقام." }),
-    referrerName: z.string().min(1, { message: "يجب اختيار المُعرّف." }),
+    referrerName: z.string().min(1, { message: "يجب اختيار مدخل البيانات." }),
 });
 
 const ReferrerSchema = z.object({
-  name: z.string().trim().min(3, { message: "اسم المُعرّف يجب أن يتكون من 3 أحرف على الأقل." }),
+  name: z.string().trim().min(3, { message: "اسم المستخدم يجب أن يتكون من 3 أحرف على الأقل." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تتكون من 6 أحرف على الأقل." }),
 });
 
@@ -42,7 +43,7 @@ const VoterSchema = z.object({
 })
 
 const LoginSchema = z.object({
-  email: z.string().email({ message: "الرجاء إدخال بريد إلكتروني صالح." }),
+  username: z.string().min(1, { message: "الرجاء إدخال اسم المستخدم أو البريد الإلكتروني." }),
   password: z.string().min(1, { message: "الرجاء إدخال كلمة المرور." }),
 })
 // #endregion
@@ -126,21 +127,32 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
 
   if (!validatedFields.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors.email?.[0] || validatedFields.error.flatten().fieldErrors.password?.[0]
+      error: validatedFields.error.flatten().fieldErrors.username?.[0] || validatedFields.error.flatten().fieldErrors.password?.[0]
     }
   }
 
-  const { email, password } = validatedFields.data;
+  const { username, password } = validatedFields.data;
 
   // This is a mock authentication.
-  if (email === "admin@example.com" && password === "password") {
+  // In a real app, you would hash passwords and check against a database.
+  
+  // Case 1: Admin login (email)
+  if (username === "admin@example.com" && password === "password") {
+     return {
+        message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك..."
+    }
+  }
+
+  // Case 2: Referrer login (username)
+  const referrer = await findReferrerByName(username);
+  if (referrer && referrer.password === password) {
     return {
         message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك..."
     }
   }
 
   return {
-    error: "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    error: "اسم المستخدم أو كلمة المرور غير صحيحة."
   }
 }
 
@@ -277,9 +289,9 @@ export async function addReferrer(prevState: FormState, formData: FormData): Pro
   try {
     await addReferrerToDb(validatedFields.data);
     revalidatePath('/admin/referrers');
-    return { message: `تمت إضافة المُعرّف "${validatedFields.data.name}" بنجاح.` };
+    return { message: `تمت إضافة مدخل البيانات "${validatedFields.data.name}" بنجاح.` };
   } catch (e: any) {
-    return { error: e.message || "فشل إضافة المُعرّف." };
+    return { error: e.message || "فشل إضافة مدخل البيانات." };
   }
 }
 
@@ -287,8 +299,8 @@ export async function deleteReferrer(id: string): Promise<FormState> {
   try {
     await deleteReferrerInDb(id);
     revalidatePath('/admin/referrers');
-    return { message: "تم حذف المُعرّف بنجاح." };
+    return { message: "تم حذف مدخل البيانات بنجاح." };
   } catch(e: any) {
-    return { error: e.message || "فشلت عملية حذف المُعرّف." };
+    return { error: e.message || "فشلت عملية حذف مدخل البيانات." };
   }
 }

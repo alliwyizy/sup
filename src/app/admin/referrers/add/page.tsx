@@ -29,7 +29,7 @@ function SubmitButton() {
       ) : (
         <>
           <UserPlus className="ml-2 h-5 w-5" />
-          إضافة مُعرّف
+          إضافة مدخل بيانات
         </>
       )}
     </Button>
@@ -85,7 +85,7 @@ export default function AddReferrerPage() {
                  <Button variant="outline" asChild>
                     <Link href="/admin/referrers">
                         <UserCog className="ml-2 h-4 w-4" />
-                        إدارة المُعرّفين
+                        إدارة مدخلي البيانات
                     </Link>
                 </Button>
                  <Button variant="secondary" asChild>
@@ -100,16 +100,16 @@ export default function AddReferrerPage() {
             <Card className="w-full max-w-lg">
                 <CardHeader className="text-center">
                     <CardTitle className="font-headline text-2xl tracking-tight">
-                        إضافة مُعرّف جديد
+                        إضافة مدخل بيانات جديد
                     </CardTitle>
                     <CardDescription className="pt-2">
-                        املأ النموذج أدناه لإضافة مُعرّف (مدخل بيانات) جديد إلى النظام.
+                        املأ النموذج أدناه لإضافة مدخل بيانات جديد إلى النظام.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form ref={formRef} action={formAction} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">اسم المُعرّف</Label>
+                            <Label htmlFor="name">اسم المستخدم</Label>
                             <Input id="name" name="name" required className="text-right" />
                         </div>
                         <div className="space-y-2">

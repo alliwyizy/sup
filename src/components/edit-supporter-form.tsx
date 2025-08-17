@@ -160,11 +160,11 @@ export function EditSupporterForm({
                 </Select>
             </div>
             <div className="space-y-2">
-                <Label htmlFor="referrerName-edit">أضيف بواسطة</Label>
+                <Label htmlFor="referrerName-edit">أضيف بواسطة (مدخل البيانات)</Label>
                 {loading ? <Skeleton className="h-10 w-full" /> : (
                   <Select name="referrerName" required defaultValue={supporter.referrerName}>
                       <SelectTrigger id="referrerName-edit">
-                          <SelectValue placeholder="اختر اسم المُعرّف" />
+                          <SelectValue placeholder="اختر اسم مدخل البيانات" />
                       </SelectTrigger>
                       <SelectContent>
                           {referrers.map(r => (

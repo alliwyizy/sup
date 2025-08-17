@@ -60,13 +60,12 @@ export function LoginForm() {
   return (
     <form action={formAction} className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="email">البريد الإلكتروني</Label>
+          <Label htmlFor="username">اسم المستخدم أو البريد الإلكتروني</Label>
           <Input
-            id="email"
-            name="email"
-            placeholder="admin@example.com"
+            id="username"
+            name="username"
+            placeholder="admin / admin@example.com"
             required
-            type="email"
             className="text-right"
           />
         </div>
@@ -78,7 +77,6 @@ export function LoginForm() {
             required
             type="password"
             className="text-right"
-            defaultValue="password"
           />
         </div>
         <SubmitButton />

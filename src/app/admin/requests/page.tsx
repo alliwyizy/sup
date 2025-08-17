@@ -51,7 +51,7 @@ export default function RequestsPage() {
                  <Button variant="outline" asChild>
                     <Link href="/admin/referrers">
                         <UserCog className="ml-2 h-4 w-4" />
-                        إدارة المُعرّفين
+                        إدارة مدخلي البيانات
                     </Link>
                 </Button>
                 <Button asChild>
