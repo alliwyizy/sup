@@ -9,10 +9,11 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen w-full items-center justify-center p-4 bg-muted">
+    <main className="flex min-h-screen w-full items-center justify-center p-4 bg-muted/40">
        <Button asChild variant="ghost" className="absolute right-4 top-4 md:right-8 md:top-8">
           <Link href="/">
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -20,13 +21,16 @@ export default function LoginPage() {
           </Link>
         </Button>
       <div className="w-full max-w-md">
-        <Card className="shadow-lg">
-          <CardHeader className="text-center">
+        <Card className="shadow-lg border-0">
+           <CardHeader className="text-center">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 mb-4">
+                <ShieldCheck className="size-8 text-primary" />
+            </div>
             <CardTitle className="font-headline text-2xl tracking-tight">
               تسجيل دخول المدير
             </CardTitle>
             <CardDescription className="pt-2">
-              الرجاء إدخال بيانات الاعتماد الخاصة بك للوصول إلى لوحة الإدارة.
+              الرجاء إدخال بيانات الاعتماد للوصول إلى لوحة التحكم.
             </CardDescription>
           </CardHeader>
           <CardContent>

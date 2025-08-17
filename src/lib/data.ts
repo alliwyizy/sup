@@ -13,6 +13,9 @@ export interface Supporter {
   pollingCenterNumber: string;
 }
 
+export type JoinRequest = Omit<Supporter, 'age'>;
+
+
 // Initial mock data with the new structure
 let supporters: Supporter[] = [
   {
@@ -43,7 +46,23 @@ let supporters: Supporter[] = [
   },
 ];
 
+let joinRequests: JoinRequest[] = [
+    {
+    voterNumber: '19900303',
+    fullName: 'علي حسن كاظم',
+    surname: 'الجنابي',
+    birthYear: 1990,
+    gender: 'ذكر',
+    phoneNumber: '07901122334',
+    education: 'دبلوم',
+    registrationCenter: 'مركز تسجيل الأعظمية',
+    pollingCenter: 'ثانوية المتميزين',
+    pollingCenterNumber: '101010',
+  },
+];
 
+
+// Supporter Functions
 export async function findSupporterByVoterNumber(voterNumber: string): Promise<Supporter | undefined> {
   await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
   return supporters.find(s => s.voterNumber === voterNumber);
@@ -85,4 +104,39 @@ export async function deleteSupporter(voterNumber: string): Promise<void> {
         throw new Error("لم يتم العثور على المؤيد لحذفه.");
     }
     supporters.splice(supporterIndex, 1);
+}
+
+// Join Request Functions
+export async function getAllJoinRequests(): Promise<JoinRequest[]> {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [...joinRequests];
+}
+
+export async function findJoinRequestByVoterNumber(voterNumber: string): Promise<JoinRequest | undefined> {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  return joinRequests.find(r => r.voterNumber === voterNumber);
+}
+
+
+export async function getJoinRequest(voterNumber: string): Promise<JoinRequest | undefined> {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  return joinRequests.find(r => r.voterNumber === voterNumber);
+}
+
+export async function addJoinRequest(request: JoinRequest): Promise<JoinRequest> {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  if (joinRequests.find(r => r.voterNumber === request.voterNumber)) {
+    throw new Error("لديك طلب انضمام معلق بالفعل.");
+  }
+  joinRequests.push(request);
+  return request;
+}
+
+export async function deleteJoinRequest(voterNumber: string): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  const requestIndex = joinRequests.findIndex(r => r.voterNumber === voterNumber);
+  if (requestIndex === -1) {
+    throw new Error("لم يتم العثور على طلب الانضمام لحذفه.");
+  }
+  joinRequests.splice(requestIndex, 1);
 }

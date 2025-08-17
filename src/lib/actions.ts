@@ -7,10 +7,13 @@ import {
   addSupporter as addSupporterToDb, 
   updateSupporter as updateSupporterInDb,
   deleteSupporter as deleteSupporterInDb,
+  addJoinRequest,
+  getJoinRequest,
+  deleteJoinRequest,
+  findJoinRequestByVoterNumber,
   type Supporter 
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 
 // #region Schemas
 const SupporterSchema = z.object({
@@ -191,4 +194,62 @@ export async function deleteSupporter(voterNumber: string): Promise<FormState> {
     } catch(e: any) {
         return { error: e.message || "فشلت عملية الحذف." };
     }
+}
+
+
+export async function submitJoinRequest(prevState: FormState, formData: FormData): Promise<FormState> {
+  const validatedFields = SupporterSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    const firstError = Object.values(errors)[0]?.[0];
+    return { error: firstError || "يرجى التحقق من الحقول." };
+  }
+
+  try {
+    const existingSupporter = await findSupporterByVoterNumber(validatedFields.data.voterNumber);
+    if (existingSupporter) {
+      return { error: "أنت مسجل بالفعل كمؤيد في قاعدة البيانات." };
+    }
+
+    const existingRequest = await findJoinRequestByVoterNumber(validatedFields.data.voterNumber);
+    if(existingRequest) {
+      return { error: "لديك طلب انضمام معلق بالفعل. يرجى انتظار المراجعة." };
+    }
+
+    await addJoinRequest(validatedFields.data);
+    return { message: "تم إرسال طلب الانضمام بنجاح. ستتم مراجعته من قبل المسؤول." };
+  } catch (e: any) {
+    return { error: e.message || "فشل إرسال طلب الانضمام." };
+  }
+}
+
+export async function approveJoinRequest(voterNumber: string): Promise<FormState> {
+  try {
+    const request = await getJoinRequest(voterNumber);
+    if (!request) {
+      return { error: "لم يتم العثور على طلب الانضمام." };
+    }
+    
+    await addSupporterToDb(request);
+    await deleteJoinRequest(voterNumber);
+
+    revalidatePath('/admin/requests');
+    revalidatePath('/admin/dashboard');
+    
+    return { message: "تمت الموافقة على الطلب وإضافة المؤيد بنجاح." };
+  } catch (e: any) {
+    return { error: e.message || "فشلت عملية الموافقة." };
+  }
+}
+
+
+export async function denyJoinRequest(voterNumber: string): Promise<FormState> {
+  try {
+    await deleteJoinRequest(voterNumber);
+    revalidatePath('/admin/requests');
+    return { message: "تم رفض الطلب وحذفه بنجاح." };
+  } catch (e: any) {
+    return { error: e.message || "فشلت عملية الرفض." };
+  }
 }
