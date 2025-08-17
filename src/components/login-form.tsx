@@ -27,7 +27,7 @@ function SubmitButton() {
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <LogIn />
+          <LogIn className="ml-2 h-5 w-5" />
           تسجيل الدخول
         </>
       )}
@@ -39,7 +39,6 @@ export function LoginForm() {
   const router = useRouter();
   const [state, formAction] = useActionState(login, initialState)
   const { toast } = useToast()
-  const formRef = React.useRef<HTMLFormElement>(null)
 
   React.useEffect(() => {
     if (state?.error) {
@@ -54,12 +53,12 @@ export function LoginForm() {
         title: "تم تسجيل الدخول بنجاح",
         description: state.message,
       });
-      router.push('/admin/stats');
+      router.push('/admin/dashboard');
     }
   }, [state, toast, router]);
 
   return (
-    <form ref={formRef} action={formAction} className="grid gap-4">
+    <form action={formAction} className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">البريد الإلكتروني</Label>
           <Input

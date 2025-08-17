@@ -79,7 +79,7 @@ export function DeleteSupporterDialog({
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <AlertDialogHeader>
+        <AlertDialogHeader className="text-right">
           <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
           <AlertDialogDescription>
             هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف بيانات المؤيد{" "}

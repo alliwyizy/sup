@@ -9,47 +9,29 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import Image from "next/image"
-import { LogIn, UserPlus } from "lucide-react"
+import { LogIn } from "lucide-react"
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen w-full flex-col items-center justify-center p-4">
+    <main className="relative flex min-h-screen w-full flex-col items-center justify-center p-4 bg-muted">
+      <Button asChild variant="outline" className="absolute left-4 top-4 md:left-8 md:top-8">
+          <Link href="/login">
+            <LogIn className="ml-2 h-4 w-4"/>
+            دخول المدير
+          </Link>
+      </Button>
+
       <div className="w-full max-w-md">
-         <div className="flex w-full flex-col justify-center space-y-6">
-            <div className="flex flex-col space-y-2 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                بحث عن مؤيد
+         <div className="flex w-full flex-col justify-center space-y-6 text-center">
+            <div className="flex flex-col space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight">
+                قاعدة بيانات مؤيدي الأستاذ عبدالرحمن اللويزي
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg text-muted-foreground pt-2">
                 أدخل رقم الناخب الخاص بك أدناه للتحقق من تسجيلك.
               </p>
             </div>
             <SearchForm />
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  أو
-                </span>
-              </div>
-            </div>
-             <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" asChild>
-                    <Link href="/join">
-                    <UserPlus />
-                    انضم كمؤيد
-                    </Link>
-                </Button>
-                <Button variant="outline" asChild>
-                    <Link href="/login">
-                    <LogIn />
-                    تسجيل دخول المسؤول
-                    </Link>
-                </Button>
-             </div>
         </div>
       </div>
     </main>

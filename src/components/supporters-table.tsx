@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Pencil, Trash2, Printer } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,12 +13,20 @@ import {
 } from "@/components/ui/table";
 import type { Supporter } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { EditSupporterForm } from "./edit-supporter-form";
 import { DeleteSupporterDialog } from "./delete-supporter-dialog";
 import { Skeleton } from "./ui/skeleton";
 
 interface SupportersTableProps {
-  data: (Supporter & { referrerName?: string })[];
+  data: Supporter[];
   onDataChange: () => void;
   loading: boolean;
 }
@@ -39,9 +47,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
   };
 
   const tableHeaders = [
-    "المحافظة", "المعرف", "الاسم", "اللقب", "العمر", "الجنس", 
-    "التحصيل الدراسي", "رقم الهاتف", "مركز الاقتراع", "رقم بطاقة الناخب",
-    "نوع التصويت", "المدخل", "الإجراءات"
+    "الاسم الكامل", "رقم الناخب", "العمر", "رقم الهاتف", "مركز الاقتراع", "إجراءات"
   ];
 
   if (loading) {
@@ -54,7 +60,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {[...Array(5)].map((_, i) => (
+                    {[...Array(10)].map((_, i) => (
                         <TableRow key={i}>
                             {tableHeaders.map((h, j) => <TableCell key={j}><Skeleton className="h-6 w-full" /></TableCell>)}
                         </TableRow>
@@ -67,8 +73,8 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center p-8 text-center text-muted-foreground border rounded-lg">
-        <p>لا يوجد بيانات لعرضها حاليًا.</p>
+      <div className="flex items-center justify-center p-8 text-center text-muted-foreground border-t">
+        <p>لا يوجد بيانات لعرضها حاليًا. قم بإضافة مؤيد جديد للبدء.</p>
       </div>
     );
   }
@@ -87,28 +93,32 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
           <TableBody>
             {data.map((supporter) => (
               <TableRow key={supporter.voterNumber}>
-                <TableCell>نينوى</TableCell>
-                <TableCell>{supporter.referrerName || "غير محدد"}</TableCell>
-                <TableCell>{supporter.name}</TableCell>
-                <TableCell>{supporter.surname}</TableCell>
+                <TableCell className="font-medium">{supporter.name} {supporter.surname}</TableCell>
+                <TableCell>{supporter.voterNumber}</TableCell>
                 <TableCell>{supporter.age}</TableCell>
-                <TableCell>{supporter.gender}</TableCell>
-                <TableCell>{supporter.educationalAttainment}</TableCell>
                 <TableCell dir="ltr">{supporter.phoneNumber}</TableCell>
                 <TableCell>{supporter.pollingCenter}</TableCell>
-                <TableCell>{supporter.voterNumber}</TableCell>
-                <TableCell>عام</TableCell>
-                <TableCell>المدخل</TableCell>
-                <TableCell className="flex items-center gap-1">
-                   <Button variant="outline" size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => handleEdit(supporter)}>
-                     <Pencil className="h-4 w-4" />
-                   </Button>
-                   <Button variant="outline" size="sm" className="bg-red-500 hover:bg-red-600 text-white" onClick={() => handleDelete(supporter)}>
-                     <Trash2 className="h-4 w-4" />
-                   </Button>
-                   <Button variant="outline" size="sm" className="bg-gray-500 hover:bg-gray-600 text-white">
-                     <Printer className="h-4 w-4" />
-                   </Button>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">فتح القائمة</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>الإجراءات</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => handleEdit(supporter)}>
+                        <Pencil className="ml-2 h-4 w-4" />
+                        تعديل
+                      </DropdownMenuItem>
+                       <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => handleDelete(supporter)}>
+                         <Trash2 className="ml-2 h-4 w-4" />
+                         حذف
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}

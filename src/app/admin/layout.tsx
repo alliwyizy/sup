@@ -1,7 +1,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { FilePlus2, Hourglass, LogOut, Users, BarChartHorizontal, List, ShieldCheck } from "lucide-react"
+import { FilePlus2, List, LogOut, ShieldCheck } from "lucide-react"
 
 import {
   SidebarProvider,
@@ -12,8 +12,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarTrigger,
-  SidebarInset,
 } from "@/components/ui/sidebar"
 
 export default function AdminLayout({
@@ -24,7 +22,7 @@ export default function AdminLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <Sidebar variant="inset" side="right" collapsible="icon">
+        <Sidebar side="right" collapsible="icon">
           <SidebarHeader>
             <div className="flex items-center gap-2">
                  <div className="bg-primary text-primary-foreground rounded-full p-2">
@@ -35,14 +33,6 @@ export default function AdminLayout({
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="الإحصائيات">
-                  <Link href="/admin/stats">
-                    <BarChartHorizontal />
-                    <span className="md:group-data-[state=expanded]:inline-block hidden">الإحصائيات</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="قائمة المؤيدين">
                   <Link href="/admin/dashboard">
@@ -56,22 +46,6 @@ export default function AdminLayout({
                   <Link href="/admin/add">
                     <FilePlus2 />
                     <span className="md:group-data-[state=expanded]:inline-block hidden">إضافة مؤيد</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="الطلبات المعلقة">
-                  <Link href="/admin/requests">
-                    <Hourglass />
-                    <span className="md:group-data-[state=expanded]:inline-block hidden">الطلبات المعلقة</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="إدارة المعرفين">
-                  <Link href="/admin/referrers">
-                    <Users />
-                    <span className="md:group-data-[state=expanded]:inline-block hidden">إدارة المعرفين</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -90,16 +64,11 @@ export default function AdminLayout({
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>
-            <main className="flex flex-1 flex-col p-4 lg:p-8">
-                 <div className="absolute top-4 right-4 md:hidden">
-                    <SidebarTrigger />
-                </div>
-                <div className="flex-1 w-full max-w-6xl mx-auto">
-                    {children}
-                </div>
-            </main>
-        </SidebarInset>
+        <main className="flex-1 p-4 lg:p-8">
+            <div className="flex-1 w-full max-w-6xl mx-auto">
+                {children}
+            </div>
+        </main>
       </div>
     </SidebarProvider>
   )

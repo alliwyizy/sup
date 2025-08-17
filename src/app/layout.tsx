@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/toaster"
 const cairo = Cairo({ subsets: ['arabic'], variable: '--font-cairo' });
 
 export const metadata: Metadata = {
-  title: 'Al-Luwaizi Supporter Database',
-  description: 'Search for supporter data to confirm your entry.',
+  title: 'قاعدة بيانات مؤيدي الأستاذ عبدالرحمن اللويزي',
+  description: 'البحث عن بيانات المؤيدين والتحقق من التسجيل.',
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body className={`${cairo.variable} font-body antialiased`}>
+      <body className={`${cairo.variable} font-sans antialiased`}>
         {children}
         <Toaster />
       </body>
