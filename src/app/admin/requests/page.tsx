@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -7,13 +8,10 @@ import { RequestsTable } from "@/components/requests-table";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, LogOut, Mail, Users, BarChart } from "lucide-react";
+import { Plus, LogOut, Mail, Users, BarChart, UserCog } from "lucide-react";
 
 
 export default function RequestsPage() {
@@ -48,6 +46,12 @@ export default function RequestsPage() {
                     <Link href="/admin/stats">
                         <BarChart className="ml-2 h-4 w-4" />
                         الإحصائيات
+                    </Link>
+                </Button>
+                 <Button variant="outline" asChild>
+                    <Link href="/admin/referrers">
+                        <UserCog className="ml-2 h-4 w-4" />
+                        إدارة المُعرّفين
                     </Link>
                 </Button>
                 <Button asChild>

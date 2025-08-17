@@ -1,4 +1,5 @@
 
+
 export interface Supporter {
   voterNumber: string;
   fullName: string;
@@ -11,12 +12,26 @@ export interface Supporter {
   registrationCenter: string;
   pollingCenter: string;
   pollingCenterNumber: string;
+  referrerName: string; // Added this
 }
 
-export type JoinRequest = Omit<Supporter, 'age'>;
+export type JoinRequest = Omit<Supporter, 'age' | 'referrerName'>;
+
+export interface Referrer {
+    id: string;
+    name: string;
+    // In a real app, you'd store a hashed password
+    password: string; 
+}
 
 
-// Initial mock data with the new structure
+// Initial mock data
+let referrers: Referrer[] = [
+    { id: '1', name: 'Admin', password: 'password' },
+    { id: '2', name: 'عمر علي', password: 'password123' },
+    { id: '3', name: 'سارة محمود', password: 'password123' },
+];
+
 let supporters: Supporter[] = [
   {
     voterNumber: '19850101',
@@ -30,6 +45,7 @@ let supporters: Supporter[] = [
     registrationCenter: 'مركز تسجيل الرصافة',
     pollingCenter: 'مدرسة الرشيد الابتدائية',
     pollingCenterNumber: '123456',
+    referrerName: 'Admin',
   },
   {
     voterNumber: '19920515',
@@ -43,6 +59,7 @@ let supporters: Supporter[] = [
     registrationCenter: 'مركز تسجيل الكرخ',
     pollingCenter: 'إعدادية الفرات للبنات',
     pollingCenterNumber: '654321',
+    referrerName: 'عمر علي',
   },
 ];
 
@@ -64,7 +81,7 @@ let joinRequests: JoinRequest[] = [
 
 // Supporter Functions
 export async function findSupporterByVoterNumber(voterNumber: string): Promise<Supporter | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network delay
   return supporters.find(s => s.voterNumber === voterNumber);
 }
 
@@ -139,4 +156,33 @@ export async function deleteJoinRequest(voterNumber: string): Promise<void> {
     throw new Error("لم يتم العثور على طلب الانضمام لحذفه.");
   }
   joinRequests.splice(requestIndex, 1);
+}
+
+
+// Referrer Functions
+export async function getAllReferrers(): Promise<Referrer[]> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return [...referrers];
+}
+
+export async function addReferrer(referrerData: Omit<Referrer, 'id'>): Promise<Referrer> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (referrers.find(r => r.name.toLowerCase() === referrerData.name.toLowerCase())) {
+        throw new Error("اسم المُعرّف هذا مستخدم بالفعل.");
+    }
+    const newReferrer = { ...referrerData, id: Date.now().toString() };
+    referrers.push(newReferrer);
+    return newReferrer;
+}
+
+export async function deleteReferrer(id: string): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (id === '1') { // Prevent deleting the admin
+      throw new Error("لا يمكن حذف حساب المسؤول الرئيسي.");
+    }
+    const index = referrers.findIndex(r => r.id === id);
+    if (index === -1) {
+        throw new Error("لم يتم العثور على المُعرّف لحذفه.");
+    }
+    referrers.splice(index, 1);
 }

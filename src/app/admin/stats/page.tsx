@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon } from "lucide-react";
+import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type EducationDistribution = { name: string; total: number };
@@ -88,6 +89,12 @@ export default function StatsPage() {
               طلبات الانضمام
             </Link>
           </Button>
+          <Button variant="outline" asChild>
+                <Link href="/admin/referrers">
+                    <UserCog className="ml-2 h-4 w-4" />
+                    إدارة المُعرّفين
+                </Link>
+            </Button>
           <Button asChild>
             <Link href="/admin/add">
               <Plus className="ml-2 h-4 w-4" />

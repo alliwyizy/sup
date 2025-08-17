@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -87,7 +88,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
 
   const tableHeaders = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
-    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز", "إجراءات"
+    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز", "أضيف بواسطة", "إجراءات"
   ];
 
   if (loading) {
@@ -174,6 +175,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
                 <TableCell className="text-center">{supporter.registrationCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenterNumber}</TableCell>
+                <TableCell className="text-center">{supporter.referrerName}</TableCell>
                 <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

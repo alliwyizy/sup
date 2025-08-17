@@ -1,4 +1,5 @@
 
+
 import { AddSupporterForm } from "@/components/add-supporter-form";
 import {
   Card,
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, UserPlus, LogOut, Users, Mail, BarChart } from "lucide-react";
+import { ArrowRight, UserPlus, LogOut, Users, Mail, BarChart, UserCog } from "lucide-react";
 
 export default function AddSupporterPage() {
   return (
@@ -34,6 +35,12 @@ export default function AddSupporterPage() {
                     <Link href="/admin/stats">
                         <BarChart className="ml-2 h-4 w-4" />
                         الإحصائيات
+                    </Link>
+                </Button>
+                 <Button variant="outline" asChild>
+                    <Link href="/admin/referrers">
+                        <UserCog className="ml-2 h-4 w-4" />
+                        إدارة المُعرّفين
                     </Link>
                 </Button>
                  <Button variant="secondary" asChild>

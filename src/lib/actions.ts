@@ -1,4 +1,5 @@
 
+
 "use server"
 
 import { z } from "zod"
@@ -11,7 +12,8 @@ import {
   getJoinRequest,
   deleteJoinRequest,
   findJoinRequestByVoterNumber,
-  type Supporter 
+  addReferrer as addReferrerToDb,
+  deleteReferrer as deleteReferrerInDb,
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
 
@@ -27,6 +29,12 @@ const SupporterSchema = z.object({
     registrationCenter: z.string().min(1, { message: "اسم مركز التسجيل مطلوب." }),
     pollingCenter: z.string().min(1, { message: "اسم مركز الاقتراع مطلوب." }),
     pollingCenterNumber: z.string().regex(/^\d{6}$/, { message: "رقم مركز الاقتراع يجب أن يتكون من 6 أرقام." }),
+    referrerName: z.string().min(1, { message: "يجب اختيار المُعرّف." }),
+});
+
+const ReferrerSchema = z.object({
+  name: z.string().trim().min(3, { message: "اسم المُعرّف يجب أن يتكون من 3 أحرف على الأقل." }),
+  password: z.string().min(6, { message: "كلمة المرور يجب أن تتكون من 6 أحرف على الأقل." }),
 });
 
 const VoterSchema = z.object({
@@ -198,7 +206,7 @@ export async function deleteSupporter(voterNumber: string): Promise<FormState> {
 
 
 export async function submitJoinRequest(prevState: FormState, formData: FormData): Promise<FormState> {
-  const validatedFields = SupporterSchema.safeParse(Object.fromEntries(formData.entries()));
+  const validatedFields = SupporterSchema.omit({ referrerName: true }).safeParse(Object.fromEntries(formData.entries()));
 
   if (!validatedFields.success) {
     const errors = validatedFields.error.flatten().fieldErrors;
@@ -231,7 +239,9 @@ export async function approveJoinRequest(voterNumber: string): Promise<FormState
       return { error: "لم يتم العثور على طلب الانضمام." };
     }
     
-    await addSupporterToDb(request);
+    // Admin is the referrer for approved requests
+    const supporterData = { ...request, referrerName: 'Admin' };
+    await addSupporterToDb(supporterData);
     await deleteJoinRequest(voterNumber);
 
     revalidatePath('/admin/requests');
@@ -251,5 +261,34 @@ export async function denyJoinRequest(voterNumber: string): Promise<FormState> {
     return { message: "تم رفض الطلب وحذفه بنجاح." };
   } catch (e: any) {
     return { error: e.message || "فشلت عملية الرفض." };
+  }
+}
+
+// Referrer Actions
+export async function addReferrer(prevState: FormState, formData: FormData): Promise<FormState> {
+  const validatedFields = ReferrerSchema.safeParse(Object.fromEntries(formData.entries()));
+  
+  if (!validatedFields.success) {
+    const errors = validatedFields.error.flatten().fieldErrors;
+    const firstError = Object.values(errors)[0]?.[0];
+    return { error: firstError || "يرجى التحقق من الحقول." };
+  }
+
+  try {
+    await addReferrerToDb(validatedFields.data);
+    revalidatePath('/admin/referrers');
+    return { message: `تمت إضافة المُعرّف "${validatedFields.data.name}" بنجاح.` };
+  } catch (e: any) {
+    return { error: e.message || "فشل إضافة المُعرّف." };
+  }
+}
+
+export async function deleteReferrer(id: string): Promise<FormState> {
+  try {
+    await deleteReferrerInDb(id);
+    revalidatePath('/admin/referrers');
+    return { message: "تم حذف المُعرّف بنجاح." };
+  } catch(e: any) {
+    return { error: e.message || "فشلت عملية حذف المُعرّف." };
   }
 }

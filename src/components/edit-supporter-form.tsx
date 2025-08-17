@@ -1,13 +1,15 @@
 
+
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { useActionState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
 import * as React from "react";
 
 import { updateSupporter, type FormState } from "@/lib/actions";
-import type { Supporter } from "@/lib/data";
+import type { Supporter, Referrer } from "@/lib/data";
+import { getAllReferrers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Skeleton } from "./ui/skeleton";
 
 const initialState: FormState = {
   message: null,
@@ -60,6 +63,20 @@ export function EditSupporterForm({
 }: EditSupporterFormProps) {
   const [state, formAction] = useActionState(updateSupporter, initialState);
   const { toast } = useToast();
+  const [referrers, setReferrers] = useState<Referrer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchReferrers() {
+        if (isOpen) {
+            setLoading(true);
+            const data = await getAllReferrers();
+            setReferrers(data);
+            setLoading(false);
+        }
+    }
+    fetchReferrers();
+  }, [isOpen]);
 
   React.useEffect(() => {
     if (state?.error) {
@@ -129,7 +146,7 @@ export function EditSupporterForm({
                     </SelectContent>
                 </Select>
             </div>
-             <div className="space-y-2 md:col-span-2">
+             <div className="space-y-2">
                 <Label htmlFor="education-edit">التحصيل الدراسي</Label>
                 <Select name="education" required defaultValue={supporter.education}>
                     <SelectTrigger id="education-edit">
@@ -141,6 +158,21 @@ export function EditSupporterForm({
                         ))}
                     </SelectContent>
                 </Select>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="referrerName-edit">أضيف بواسطة</Label>
+                {loading ? <Skeleton className="h-10 w-full" /> : (
+                  <Select name="referrerName" required defaultValue={supporter.referrerName}>
+                      <SelectTrigger id="referrerName-edit">
+                          <SelectValue placeholder="اختر اسم المُعرّف" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          {referrers.map(r => (
+                              <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                )}
             </div>
              <div className="space-y-2">
                 <Label htmlFor="registrationCenter-edit">اسم مركز التسجيل</Label>

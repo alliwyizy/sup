@@ -1,18 +1,21 @@
 
+
 "use client"
 
 import { useFormStatus } from "react-dom"
-import { useActionState, useEffect, useRef } from "react"
+import { useActionState, useEffect, useRef, useState } from "react"
 import { Loader2, UserPlus } from "lucide-react"
 import * as React from "react"
 
 import { addSupporter, type FormState } from "@/lib/actions"
+import { type Referrer, getAllReferrers } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { CardContent, CardFooter } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "./ui/skeleton"
 
 
 const initialState: FormState = {
@@ -42,6 +45,18 @@ export function AddSupporterForm() {
   const [state, formAction] = useActionState(addSupporter, initialState)
   const { toast } = useToast()
   const formRef = React.useRef<HTMLFormElement>(null)
+  const [referrers, setReferrers] = useState<Referrer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    async function fetchReferrers() {
+        setLoading(true);
+        const data = await getAllReferrers();
+        setReferrers(data);
+        setLoading(false);
+    }
+    fetchReferrers();
+  }, []);
 
 
   React.useEffect(() => {
@@ -96,7 +111,7 @@ export function AddSupporterForm() {
                 </SelectContent>
             </Select>
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
             <Label htmlFor="education">التحصيل الدراسي</Label>
             <Select name="education" required>
                 <SelectTrigger id="education">
@@ -108,6 +123,21 @@ export function AddSupporterForm() {
                     ))}
                 </SelectContent>
             </Select>
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="referrerName">أضيف بواسطة</Label>
+             {loading ? <Skeleton className="h-10 w-full" /> : (
+                <Select name="referrerName" required>
+                    <SelectTrigger id="referrerName">
+                        <SelectValue placeholder="اختر اسم المُعرّف" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {referrers.map(r => (
+                            <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="registrationCenter">اسم مركز التسجيل</Label>
