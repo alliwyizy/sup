@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow for analyzing supporter data.
@@ -63,6 +64,6 @@ const analyzeSupportersFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output || "لم أتمكن من تحليل البيانات أو العثور على إجابة.";
+    return output ?? "لم أتمكن من تحليل البيانات أو العثور على إجابة.";
   }
 );
