@@ -130,24 +130,31 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   };
   
   const handleExport = () => {
-    const exportData = filteredData.map(s => ({
+    const exportData = filteredData.map(s => {
+      const baseData: any = {
         'رقم الناخب': s.voterNumber,
         'الاسم الكامل': s.fullName,
         'اللقب': s.surname,
+        'سنة الميلاد': s.birthYear,
         'العمر': s.age,
         'الجنس': s.gender,
         'رقم الهاتف': s.phoneNumber,
         'التحصيل الدراسي': s.education,
-        'حالة التدقيق': s.auditStatus,
         'مركز التسجيل': s.registrationCenter,
         'مركز الاقتراع': s.pollingCenter,
-        'رقم المركز': s.pollingCenterNumber,
-        'أضيف بواسطة': s.referrerName,
-    }));
+        'رقم مركز الاقتراع': s.pollingCenterNumber,
+      };
+      if (isAdmin) {
+        baseData['حالة التدقيق'] = s.auditStatus;
+        baseData['أضيف بواسطة'] = s.referrerName;
+      }
+      return baseData;
+    });
+
     const worksheet = xlsx.utils.json_to_sheet(exportData);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, "المؤيدون");
-    xlsx.writeFile(workbook, "supporters_data.xlsx");
+    xlsx.writeFile(workbook, `بيانات_المؤيدين_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   const getAuditStatusVariant = (status: AuditStatus): "default" | "secondary" | "destructive" => {
@@ -217,7 +224,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 />
             </div>
             {isAdmin && (
-                 <Button onClick={handleExport} variant="outline">
+                 <Button onClick={handleExport} variant="outline" disabled={filteredData.length === 0}>
                     <FileDown className="ml-2 h-4 w-4" />
                     تصدير إلى Excel
                 </Button>
@@ -395,6 +402,8 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
     </>
   );
 }
+
+    
 
     
 
