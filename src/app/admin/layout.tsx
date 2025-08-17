@@ -4,6 +4,7 @@ import { SidebarProvider, Sidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButt
 import Link from "next/link";
 import { LayoutDashboard, Users, UserPlus, LogOut, ShieldCheck, MailPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 
 export default function AdminLayout({
