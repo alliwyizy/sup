@@ -12,19 +12,26 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, LogOut, Mail, Users, BarChart, UserCog } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 
 export default function DashboardPage() {
   const [data, setData] = React.useState<Supporter[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const searchParams = useSearchParams();
+  const referrerName = searchParams.get('ref');
+  const isAdmin = !referrerName;
 
-  // Function to refresh data
   const handleDataChange = React.useCallback(async () => {
     setLoading(true);
     const supporters = await getAllSupporters();
-    setData(supporters);
+    if (referrerName) {
+        setData(supporters.filter(s => s.referrerName === referrerName));
+    } else {
+        setData(supporters);
+    }
     setLoading(false);
-  }, []);
+  }, [referrerName]);
 
   React.useEffect(() => {
     handleDataChange();
@@ -37,26 +44,30 @@ export default function DashboardPage() {
            <h1 className="text-xl font-semibold">لوحة التحكم</h1>
            <div className="flex-1" />
             <div className="flex items-center gap-2">
-                <Button variant="outline" asChild>
-                    <Link href="/admin/requests">
-                        <Mail className="ml-2 h-4 w-4" />
-                        طلبات الانضمام
-                    </Link>
-                </Button>
-                <Button variant="outline" asChild>
-                    <Link href="/admin/stats">
-                        <BarChart className="ml-2 h-4 w-4" />
-                        الإحصائيات
-                    </Link>
-                </Button>
-                 <Button variant="outline" asChild>
-                    <Link href="/admin/referrers">
-                        <UserCog className="ml-2 h-4 w-4" />
-                        إدارة مدخلي البيانات
-                    </Link>
-                </Button>
+                {isAdmin && (
+                    <>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/requests">
+                                <Mail className="ml-2 h-4 w-4" />
+                                طلبات الانضمام
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/stats">
+                                <BarChart className="ml-2 h-4 w-4" />
+                                الإحصائيات
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/referrers">
+                                <UserCog className="ml-2 h-4 w-4" />
+                                إدارة مدخلي البيانات
+                            </Link>
+                        </Button>
+                    </>
+                )}
                 <Button asChild>
-                    <Link href="/admin/add">
+                    <Link href={isAdmin ? "/admin/add" : `/admin/add?ref=${referrerName}`}>
                         <Plus className="ml-2 h-4 w-4" />
                         إضافة مؤيد
                     </Link>
@@ -73,13 +84,17 @@ export default function DashboardPage() {
          <div className="space-y-2">
             <div className="flex items-center gap-2">
                 <Users />
-                <h2 className="text-2xl font-bold tracking-tight">قائمة المؤيدين</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                    {isAdmin ? "قائمة المؤيدين" : `قائمة المؤيدين (مدخل البيانات: ${referrerName})`}
+                </h2>
             </div>
-            <p className="text-muted-foreground">تصفح، ابحث، وصفِّ بيانات المؤيدين المسجلين في قاعدة البيانات.</p>
+            <p className="text-muted-foreground">
+                {isAdmin ? "تصفح، ابحث، وصفِّ بيانات المؤيدين المسجلين في قاعدة البيانات." : "هذه هي قائمة المؤيدين الذين قمت بإضافتهم."}
+            </p>
         </div>
         <Card className="shadow-sm">
             <CardContent className="p-6">
-                 <SupportersTable loading={loading} data={data} onDataChange={handleDataChange} />
+                 <SupportersTable loading={loading} data={data} onDataChange={handleDataChange} isAdmin={isAdmin} />
             </CardContent>
         </Card>
       </main>

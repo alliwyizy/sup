@@ -66,6 +66,8 @@ export type SearchState = {
 export type AuthState = {
   error?: string | null;
   message?: string | null;
+  role?: 'admin' | 'referrer' | null;
+  userName?: string | null;
 }
 
 export type FormState = {
@@ -133,13 +135,12 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
 
   const { username, password } = validatedFields.data;
 
-  // This is a mock authentication.
-  // In a real app, you would hash passwords and check against a database.
-  
   // Case 1: Admin login (email)
-  if (username === "admin@example.com" && password === "password") {
+  if ((username === "admin@example.com" || username.toLowerCase() === "admin") && password === "password") {
      return {
-        message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك..."
+        message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك...",
+        role: 'admin',
+        userName: 'Admin'
     }
   }
 
@@ -147,7 +148,9 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
   const referrer = await findReferrerByName(username);
   if (referrer && referrer.password === password) {
     return {
-        message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك..."
+        message: "تم تسجيل الدخول بنجاح. جارٍ توجيهك...",
+        role: 'referrer',
+        userName: referrer.name
     }
   }
 

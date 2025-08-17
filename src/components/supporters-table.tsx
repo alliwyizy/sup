@@ -32,13 +32,14 @@ interface SupportersTableProps {
   data: Supporter[];
   onDataChange: () => void;
   loading: boolean;
+  isAdmin: boolean;
 }
 
 const PAGE_SIZE = 50;
 const educationLevels = ['الكل', 'امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'];
 const genderLevels = ['الكل', 'ذكر', 'انثى'];
 
-export function SupportersTable({ data, onDataChange, loading }: SupportersTableProps) {
+export function SupportersTable({ data, onDataChange, loading, isAdmin }: SupportersTableProps) {
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [selectedSupporter, setSelectedSupporter] = React.useState<Supporter | null>(null);
@@ -86,10 +87,15 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
       setFilters(prev => ({ ...prev, [filterName]: value }));
   };
 
-  const tableHeaders = [
+  const tableHeadersBase = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
-    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز", "أضيف بواسطة", "إجراءات"
+    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز"
   ];
+  
+  const tableHeaders = isAdmin 
+    ? [...tableHeadersBase, "أضيف بواسطة", "إجراءات"]
+    : [...tableHeadersBase, "إجراءات"];
+
 
   if (loading) {
      return (
@@ -175,7 +181,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
                 <TableCell className="text-center">{supporter.registrationCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenterNumber}</TableCell>
-                <TableCell className="text-center">{supporter.referrerName}</TableCell>
+                {isAdmin && <TableCell className="text-center">{supporter.referrerName}</TableCell>}
                 <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

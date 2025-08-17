@@ -1,5 +1,7 @@
 
 
+"use client";
+
 import { AddSupporterForm } from "@/components/add-supporter-form";
 import {
   Card,
@@ -11,8 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, UserPlus, LogOut, Users, Mail, BarChart, UserCog } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function AddSupporterPage() {
+    const searchParams = useSearchParams();
+    const referrerName = searchParams.get('ref');
+    const isAdmin = !referrerName;
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 py-4">
@@ -20,29 +27,33 @@ export default function AddSupporterPage() {
            <div className="flex-1" />
             <div className="flex items-center gap-2">
                  <Button variant="outline" asChild>
-                    <Link href="/admin/dashboard">
+                    <Link href={isAdmin ? "/admin/dashboard" : `/admin/dashboard?ref=${referrerName}`}>
                         <Users className="ml-2 h-4 w-4" />
                         قائمة المؤيدين
                     </Link>
                 </Button>
-                <Button variant="outline" asChild>
-                    <Link href="/admin/requests">
-                        <Mail className="ml-2 h-4 w-4" />
-                        طلبات الانضمام
-                    </Link>
-                </Button>
-                 <Button variant="outline" asChild>
-                    <Link href="/admin/stats">
-                        <BarChart className="ml-2 h-4 w-4" />
-                        الإحصائيات
-                    </Link>
-                </Button>
-                 <Button variant="outline" asChild>
-                    <Link href="/admin/referrers">
-                        <UserCog className="ml-2 h-4 w-4" />
-                        إدارة مدخلي البيانات
-                    </Link>
-                </Button>
+                {isAdmin && (
+                    <>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/requests">
+                                <Mail className="ml-2 h-4 w-4" />
+                                طلبات الانضمام
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/stats">
+                                <BarChart className="ml-2 h-4 w-4" />
+                                الإحصائيات
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/referrers">
+                                <UserCog className="ml-2 h-4 w-4" />
+                                إدارة مدخلي البيانات
+                            </Link>
+                        </Button>
+                    </>
+                )}
                  <Button variant="secondary" asChild>
                     <Link href="/">
                         <LogOut className="ml-2 h-4 w-4" />
@@ -62,7 +73,7 @@ export default function AddSupporterPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                <AddSupporterForm />
+                <AddSupporterForm referrerName={referrerName} />
                 </CardContent>
             </Card>
        </main>

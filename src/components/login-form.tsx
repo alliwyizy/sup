@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { useFormStatus } from "react-dom"
@@ -17,6 +18,8 @@ import { useToast } from "@/hooks/use-toast"
 const initialState: AuthState = {
   message: null,
   error: null,
+  role: null,
+  userName: null,
 }
 
 function SubmitButton() {
@@ -53,7 +56,12 @@ export function LoginForm() {
         title: "تم تسجيل الدخول بنجاح",
         description: state.message,
       });
-      router.push('/admin/dashboard');
+
+      if(state.role === 'admin') {
+         router.push('/admin/dashboard');
+      } else if (state.role === 'referrer') {
+         router.push(`/admin/dashboard?ref=${state.userName}`);
+      }
     }
   }, [state, toast, router]);
 

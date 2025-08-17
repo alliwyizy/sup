@@ -41,22 +41,27 @@ function SubmitButton() {
 
 const educationLevels = ['امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'];
 
-export function AddSupporterForm() {
+export function AddSupporterForm({ referrerName }: { referrerName: string | null }) {
   const [state, formAction] = useActionState(addSupporter, initialState)
   const { toast } = useToast()
   const formRef = React.useRef<HTMLFormElement>(null)
   const [referrers, setReferrers] = useState<Referrer[]>([]);
   const [loading, setLoading] = useState(true);
+  const isAdmin = !referrerName;
 
   React.useEffect(() => {
     async function fetchReferrers() {
-        setLoading(true);
-        const data = await getAllReferrers();
-        setReferrers(data);
-        setLoading(false);
+        if(isAdmin) {
+            setLoading(true);
+            const data = await getAllReferrers();
+            setReferrers(data);
+            setLoading(false);
+        } else {
+            setLoading(false);
+        }
     }
     fetchReferrers();
-  }, []);
+  }, [isAdmin]);
 
 
   React.useEffect(() => {
@@ -126,18 +131,22 @@ export function AddSupporterForm() {
         </div>
         <div className="space-y-2">
             <Label htmlFor="referrerName">أضيف بواسطة (مدخل البيانات)</Label>
-             {loading ? <Skeleton className="h-10 w-full" /> : (
-                <Select name="referrerName" required>
-                    <SelectTrigger id="referrerName">
-                        <SelectValue placeholder="اختر اسم مدخل البيانات" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {referrers.map(r => (
-                            <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            )}
+             {loading ? <Skeleton className="h-10 w-full" /> : 
+                isAdmin ? (
+                    <Select name="referrerName" required>
+                        <SelectTrigger id="referrerName">
+                            <SelectValue placeholder="اختر اسم مدخل البيانات" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {referrers.map(r => (
+                                <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                ) : (
+                    <Input name="referrerName" value={referrerName ?? ''} readOnly className="bg-muted" />
+                )
+            }
         </div>
         <div className="space-y-2">
           <Label htmlFor="registrationCenter">اسم مركز التسجيل</Label>
