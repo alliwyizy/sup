@@ -36,13 +36,13 @@ const initialState: FormState = {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending}>
+    <Button type="submit" disabled={pending} className="bg-amber-500 hover:bg-amber-600">
       {pending ? (
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
           <Save className="ml-2 h-5 w-5" />
-          حفظ التغييرات
+          حفظ التعديلات
         </>
       )}
     </Button>

@@ -11,8 +11,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { PlusCircle, Search, Printer, FileDown, Trash2, Pencil } from "lucide-react";
+import Link from "next/link";
 
 
 export default function DashboardPage() {
@@ -45,43 +60,75 @@ export default function DashboardPage() {
     setKey(Date.now());
   };
 
+  const filters = [
+    { label: "نوع التصويت", options: ["الكل", "عام", "خاص"] },
+    { label: "شعبي", options: ["الكل"] },
+    { label: "المنطقة", options: ["الكل", "الحضر", "الريف"] },
+    { label: "الوظيفة", options: ["الكل"] },
+    { label: "المعرف", options: ["الكل", ...referrers.map(r => `${r.name} ${r.surname}`)] },
+    { label: "التاريخ", options: ["الكل"] },
+  ];
+
   return (
     <div className="w-full mx-auto grid gap-6">
-        <Card>
+        <Card className="w-full">
             <CardHeader>
-                <CardTitle className="font-headline text-2xl tracking-tight">قائمة المؤيدين</CardTitle>
-                <CardDescription>
-                    عرض وإدارة جميع المؤيدين والمعرّفين في النظام.
-                </CardDescription>
+                <div className="text-center">
+                    <p className="text-sm text-muted-foreground">Election Campaign Management System</p>
+                    <CardTitle className="text-2xl font-bold tracking-tight">نظام ادارة الحملة الانتخابية المؤيدون</CardTitle>
+                </div>
             </CardHeader>
-            <CardContent>
-                <Tabs defaultValue="all" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="all">الكل ({loading ? '...' : allSupporters.length})</TabsTrigger>
-                    <TabsTrigger value="referrers">المعرّفين ({loading ? '...' : referrers.length})</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="all" className="mt-4">
-                    {loading ? (
-                        <div className="space-y-2 pt-4">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-12 w-full" />
-                            <Skeleton className="h-12 w-full" />
+            <CardContent className="space-y-4">
+                 <Accordion type="single" collapsible className="w-full bg-primary/10 border border-primary/20 rounded-lg px-4">
+                    <AccordionItem value="item-1" className="border-b-0">
+                        <AccordionTrigger className="hover:no-underline text-primary font-medium">تعليمات استخدام واجهة المؤيدين</AccordionTrigger>
+                        <AccordionContent>
+                            هنا تضاف التعليمات الخاصة باستخدام الواجهة وكيفية التعامل مع البيانات.
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {filters.map((filter, index) => (
+                        <div key={index} className="flex flex-col gap-1">
+                            <span className="text-sm font-medium text-muted-foreground pr-1">{filter.label}</span>
+                             <Select dir="rtl" defaultValue="الكل">
+                                <SelectTrigger className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {filter.options.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
                         </div>
-                    ) : (
-                        <SupportersTable data={allSupporters} onDataChange={handleDataChange} />
-                    )}
-                    </TabsContent>
-                    <TabsContent value="referrers" className="mt-4">
-                    {loading ? (
-                        <div className="space-y-2 pt-4">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-12 w-full" />
-                        </div>
-                    ) : (
-                        <SupportersTable data={referrers} onDataChange={handleDataChange} />
-                    )}
-                    </TabsContent>
-                </Tabs>
+                    ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-4">
+                   <div className="flex-grow flex items-center gap-2">
+                     <div className="relative w-full max-w-sm">
+                        <Input placeholder="بحث..." className="pr-10 bg-muted border-muted-foreground/30"/>
+                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"/>
+                     </div>
+                     <Button variant="secondary">
+                        عدد المؤيدين: {loading ? '...' : allSupporters.length}
+                     </Button>
+                   </div>
+                   <div className="flex items-center gap-2">
+                        <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+                           <Link href="/admin/add"><PlusCircle /> اضافة</Link>
+                        </Button>
+                         <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
+                           <FileDown /> ملخص مراكز الاقتراع
+                        </Button>
+                         <Button variant="default" className="bg-blue-600 hover:bg-blue-700">
+                           <FileDown /> ملخص مراكز تسجيل
+                        </Button>
+                   </div>
+                </div>
+
+                <SupportersTable loading={loading} data={allSupporters} onDataChange={handleDataChange} />
+
             </CardContent>
         </Card>
     </div>
