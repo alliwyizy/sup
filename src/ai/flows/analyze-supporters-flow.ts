@@ -43,7 +43,7 @@ export async function analyzeSupportersData(input: SupportersAnalysisInput): Pro
 const prompt = ai.definePrompt({
   name: 'analyzeSupportersPrompt',
   input: { schema: SupportersAnalysisInputSchema },
-  output: { schema: z.string() },
+  // We remove the output schema here to handle potential nulls in the flow.
   prompt: `أنت مساعد تحليلي وخبير في تحليل البيانات. مهمتك هي الإجابة على سؤال المستخدم بناءً على بيانات المؤيدين المقدمة لك بصيغة JSON.
 
   سؤال المستخدم: {{{question}}}
