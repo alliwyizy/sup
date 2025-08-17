@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import * as React from "react";
@@ -19,11 +18,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
 
 
-type EducationDistribution = { name: string; total: number };
+type DistributionChartData = { name: string; total: number };
 type GenderDistribution = { name: string; value: number };
-type ReferrerDistribution = { name: string; total: number };
+
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col space-y-1">
+            <span className="text-[0.70rem] uppercase text-muted-foreground">
+              {label}
+            </span>
+            <span className="font-bold text-muted-foreground">
+              {payload[0].value}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 
 export default function StatsPage() {
   const [supporters, setSupporters] = React.useState<Supporter[]>([]);
@@ -60,7 +81,23 @@ export default function StatsPage() {
         educationDistribution: [],
         genderDistribution: [],
         referrerDistribution: [],
+        topSurnames: [],
+        topPollingCenters: [],
+        topRegistrationCenters: [],
       };
+    }
+    
+    const countAndSort = (field: keyof Supporter, limit: number): DistributionChartData[] => {
+         const counts = supporters.reduce((acc, s) => {
+            const key = s[field] as string;
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        return Object.entries(counts)
+            .map(([name, total]) => ({ name, total }))
+            .sort((a, b) => b.total - a.total)
+            .slice(0, limit);
     }
 
     const total = supporters.length;
@@ -68,32 +105,21 @@ export default function StatsPage() {
     const female = total - male;
     const totalAge = supporters.reduce((acc, s) => acc + s.age, 0);
     const avgAge = total > 0 ? Math.round(totalAge / total) : 0;
+    
+    const educationDistribution = countAndSort('education', Infinity);
+    const topSurnames = countAndSort('surname', 20);
+    const topPollingCenters = countAndSort('pollingCenter', 10);
+    const topRegistrationCenters = countAndSort('registrationCenter', 10);
+    const referrerDistribution = countAndSort('referrerName', Infinity);
 
-    const educationCounts = supporters.reduce((acc, s) => {
-      acc[s.education] = (acc[s.education] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const educationDistribution: EducationDistribution[] = Object.entries(educationCounts)
-        .map(([name, total]) => ({ name, total }))
-        .sort((a, b) => b.total - a.total);
 
     const genderDistribution: GenderDistribution[] = [
       { name: "ذكور", value: male },
       { name: "إناث", value: female },
     ];
     
-    const referrerCounts = supporters.reduce((acc, s) => {
-      acc[s.referrerName] = (acc[s.referrerName] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
 
-    const referrerDistribution: ReferrerDistribution[] = Object.entries(referrerCounts)
-      .map(([name, total]) => ({ name, total }))
-      .sort((a, b) => b.total - a.total);
-
-
-    return { total, male, female, avgAge, educationDistribution, genderDistribution, referrerDistribution };
+    return { total, male, female, avgAge, educationDistribution, genderDistribution, referrerDistribution, topSurnames, topPollingCenters, topRegistrationCenters };
   }, [supporters]);
 
   return (
@@ -270,6 +296,75 @@ export default function StatsPage() {
           </Card>
         </div>
 
+        <div className="grid gap-4 grid-cols-1">
+             <Card>
+                <CardHeader>
+                <CardTitle>أعلى 20 لقب</CardTitle>
+                <CardDescription>الألقاب الأكثر تكراراً بين المؤيدين.</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2">
+                    {loading ? <Skeleton className="h-[400px] w-full" /> : (
+                        <ResponsiveContainer width="100%" height={400}>
+                            <RechartsBarChart data={stats.topSurnames} layout="vertical">
+                            <XAxis type="number" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis
+                                dataKey="name"
+                                type="category"
+                                stroke="#888888"
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={false}
+                                width={80}
+                            />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                            <Bar dataKey="total" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="العدد" />
+                            </RechartsBarChart>
+                        </ResponsiveContainer>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2">
+             <Card>
+                <CardHeader>
+                <CardTitle>أعلى 10 مراكز تسجيل</CardTitle>
+                <CardDescription>مراكز التسجيل التي ينتمي إليها أكبر عدد من المؤيدين.</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2">
+                     {loading ? <Skeleton className="h-[350px] w-full" /> : (
+                        <ResponsiveContainer width="100%" height={350}>
+                            <RechartsBarChart data={stats.topRegistrationCenters}>
+                            <XAxis dataKey="name" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} angle={-45} textAnchor="end" height={80}/>
+                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                            <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="العدد" />
+                            </RechartsBarChart>
+                        </ResponsiveContainer>
+                     )}
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                <CardTitle>أعلى 10 مراكز اقتراع</CardTitle>
+                <CardDescription>مراكز الاقتراع التي ينتمي إليها أكبر عدد من المؤيدين.</CardDescription>
+                </CardHeader>
+                <CardContent className="pl-2">
+                     {loading ? <Skeleton className="h-[350px] w-full" /> : (
+                        <ResponsiveContainer width="100%" height={350}>
+                            <RechartsBarChart data={stats.topPollingCenters}>
+                            <XAxis dataKey="name" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} angle={-45} textAnchor="end" height={80}/>
+                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                            <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="العدد" />
+                            </RechartsBarChart>
+                        </ResponsiveContainer>
+                     )}
+                </CardContent>
+            </Card>
+        </div>
+
+
         <Card>
             <CardHeader>
               <CardTitle>أداء مدخلي البيانات</CardTitle>
@@ -304,3 +399,5 @@ export default function StatsPage() {
     </div>
   );
 }
+
+    
