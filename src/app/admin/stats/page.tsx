@@ -14,10 +14,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog } from "lucide-react";
+import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog, Sparkles, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { analyzeSupportersData } from "@/ai/flows/analyze-supporters-flow";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 type EducationDistribution = { name: string; total: number };
 type GenderDistribution = { name: string; value: number };
@@ -34,6 +39,13 @@ export default function StatsPage() {
   const referrerName = searchParams.get('ref');
   const isAdmin = !referrerName;
 
+  // AI Assistant State
+  const [aiQuestion, setAiQuestion] = React.useState("");
+  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+  const [analysisResult, setAnalysisResult] = React.useState<string | null>(null);
+  const [analysisError, setAnalysisError] = React.useState<string | null>(null);
+
+
   React.useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -49,6 +61,26 @@ export default function StatsPage() {
     }
     fetchData();
   }, []);
+  
+  const handleAnalysisSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiQuestion.trim() || supporters.length === 0) return;
+
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+    setAnalysisError(null);
+
+    try {
+        const result = await analyzeSupportersData({ question: aiQuestion, supporters });
+        setAnalysisResult(result);
+    } catch(err) {
+        setAnalysisError("حدث خطأ أثناء الاتصال بمساعد الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.");
+        console.error(err);
+    } finally {
+        setIsAnalyzing(false);
+    }
+  };
+
 
   const stats = React.useMemo(() => {
     if (!supporters.length) {
@@ -300,7 +332,61 @@ export default function StatsPage() {
                     </ResponsiveContainer>
                  )}
             </CardContent>
-          </Card>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="text-primary" />
+              <CardTitle>مساعد تحليلي ذكي</CardTitle>
+            </div>
+            <CardDescription>
+              اطرح سؤالاً باللغة العربية حول بيانات المؤيدين، وسيقوم الذكاء الاصطناعي بالإجابة.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAnalysisSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="ai-question">سؤالك</Label>
+                <Textarea
+                  id="ai-question"
+                  placeholder="مثال: ما هو متوسط عمر المؤيدين من الإناث؟ أو ما هي أكثر منطقة اقتراع تضم مؤيدين؟"
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                  disabled={isAnalyzing || loading}
+                />
+              </div>
+              <Button type="submit" disabled={isAnalyzing || loading || !aiQuestion.trim()}>
+                {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                تحليل البيانات
+              </Button>
+            </form>
+
+            {analysisError && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertTitle>خطأ</AlertTitle>
+                <AlertDescription>{analysisError}</AlertDescription>
+              </Alert>
+            )}
+
+            {isAnalyzing && (
+                <div className="mt-4 flex items-center justify-center rounded-md border border-dashed p-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="mr-4 text-muted-foreground">جاري التحليل...</p>
+                </div>
+            )}
+
+            {analysisResult && (
+              <Alert className="mt-4">
+                <Sparkles className="h-4 w-4" />
+                <AlertTitle>إجابة المساعد التحليلي</AlertTitle>
+                <AlertDescription className="prose dark:prose-invert">
+                  <p>{analysisResult}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
