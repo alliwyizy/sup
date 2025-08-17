@@ -98,7 +98,7 @@ export function SearchForm() {
                     </div>
                     <div className="flex items-center justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">الاسم الكامل</span>
-                        <span>{state.data.name} {state.data.surname}</span>
+                        <span>{state.data.fullName} {state.data.surname}</span>
                     </div>
                     <div className="flex items-center justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">العمر</span>

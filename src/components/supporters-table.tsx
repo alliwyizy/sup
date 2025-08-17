@@ -47,7 +47,8 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
   };
 
   const tableHeaders = [
-    "الاسم الكامل", "رقم الناخب", "العمر", "رقم الهاتف", "مركز الاقتراع", "إجراءات"
+    "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
+    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز", "إجراءات"
   ];
 
   if (loading) {
@@ -93,11 +94,16 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
           <TableBody>
             {data.map((supporter) => (
               <TableRow key={supporter.voterNumber}>
-                <TableCell className="font-medium">{supporter.name} {supporter.surname}</TableCell>
                 <TableCell>{supporter.voterNumber}</TableCell>
+                <TableCell className="font-medium">{supporter.fullName}</TableCell>
+                <TableCell>{supporter.surname}</TableCell>
                 <TableCell>{supporter.age}</TableCell>
+                <TableCell>{supporter.gender}</TableCell>
                 <TableCell dir="ltr">{supporter.phoneNumber}</TableCell>
+                <TableCell>{supporter.education}</TableCell>
+                <TableCell>{supporter.registrationCenter}</TableCell>
                 <TableCell>{supporter.pollingCenter}</TableCell>
+                <TableCell>{supporter.pollingCenterNumber}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

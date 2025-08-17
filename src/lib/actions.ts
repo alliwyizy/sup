@@ -15,11 +15,15 @@ import { redirect } from "next/navigation"
 // #region Schemas
 const SupporterSchema = z.object({
     voterNumber: z.string().regex(/^\d{8}$/, { message: "رقم الناخب يجب أن يتكون من 8 أرقام." }),
-    name: z.string().min(1, { message: "الاسم مطلوب." }),
-    surname: z.string().min(1, { message: "اللقب مطلوب." }),
-    age: z.coerce.number().min(18, { message: "يجب أن يكون العمر 18 عامًا على الأقل." }),
-    phoneNumber: z.string().min(1, { message: "رقم الهاتف مطلوب." }),
-    pollingCenter: z.string().min(1, { message: "مركز الاقتراع مطلوب." }),
+    fullName: z.string().trim().min(1, { message: "الاسم الكامل مطلوب." }).refine(name => name.split(' ').filter(Boolean).length >= 3, { message: "الاسم الكامل يجب أن يتكون من ثلاث كلمات على الأقل." }),
+    surname: z.string().trim().min(1, { message: "اللقب مطلوب." }).refine(surname => surname.split(' ').filter(Boolean).length <= 2, { message: "اللقب يجب أن يتكون من كلمة أو كلمتين كحد أقصى." }),
+    birthYear: z.coerce.number().min(1900, { message: "سنة الميلاد يجب أن تكون بعد 1900." }).max(new Date().getFullYear() - 18, { message: "يجب أن يكون عمر المؤيد 18 عامًا على الأقل." }),
+    gender: z.enum(['ذكر', 'انثى'], { message: "الجنس مطلوب." }),
+    phoneNumber: z.string().regex(/^\d{11}$/, { message: "رقم الهاتف يجب أن يتكون من 11 رقمًا." }),
+    education: z.enum(['امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'], { message: "التحصيل الدراسي مطلوب." }),
+    registrationCenter: z.string().min(1, { message: "اسم مركز التسجيل مطلوب." }),
+    pollingCenter: z.string().min(1, { message: "اسم مركز الاقتراع مطلوب." }),
+    pollingCenterNumber: z.string().regex(/^\d{6}$/, { message: "رقم مركز الاقتراع يجب أن يتكون من 6 أرقام." }),
 });
 
 const VoterSchema = z.object({
@@ -35,7 +39,14 @@ const LoginSchema = z.object({
 // #region State Types
 export type SearchState = {
   id?: number,
-  data?: Supporter | null
+  data?: {
+    voterNumber: string,
+    fullName: string,
+    surname: string,
+    age: number,
+    phoneNumber: string,
+    pollingCenter: string,
+  } | null
   error?: string | null
   message?: string | null
 }
@@ -76,7 +87,14 @@ export async function searchByVoterNumber(
       return {
         id: submissionId,
         message: "شكراً لدعمكم! بياناتكم مسجلة لدينا في قاعدة بيانات مؤيدي الأستاذ عبدالرحمن اللويزي.",
-        data: supporter,
+        data: {
+          voterNumber: supporter.voterNumber,
+          fullName: supporter.fullName,
+          surname: supporter.surname,
+          age: supporter.age,
+          phoneNumber: supporter.phoneNumber,
+          pollingCenter: supporter.pollingCenter,
+        },
       }
     } else {
       return {
@@ -134,11 +152,11 @@ export async function addSupporter(prevState: FormState, formData: FormData): Pr
       }
     }
 
-    await addSupporterToDb(validatedFields.data as Supporter);
+    await addSupporterToDb(validatedFields.data);
     revalidatePath('/admin/dashboard');
 
     return {
-      message: `تمت إضافة "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.`
+      message: `تمت إضافة "${validatedFields.data.fullName} ${validatedFields.data.surname}" بنجاح.`
     }
   } catch(e) {
     return {
@@ -157,9 +175,9 @@ export async function updateSupporter(prevState: FormState, formData: FormData):
   }
 
   try {
-    await updateSupporterInDb(validatedFields.data as Supporter);
+    await updateSupporterInDb(validatedFields.data);
     revalidatePath('/admin/dashboard');
-    return { message: `تم تحديث بيانات "${validatedFields.data.name} ${validatedFields.data.surname}" بنجاح.` };
+    return { message: `تم تحديث بيانات "${validatedFields.data.fullName} ${validatedFields.data.surname}" بنجاح.` };
   } catch (e: any) {
     return { error: e.message || "فشل تحديث بيانات المؤيد." };
   }
