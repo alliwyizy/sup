@@ -57,7 +57,7 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
             <Table>
                 <TableHeader>
                 <TableRow>
-                    {tableHeaders.map((header) => <TableHead key={header}>{header}</TableHead>)}
+                    {tableHeaders.map((header) => <TableHead key={header} className="text-center">{header}</TableHead>)}
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -87,24 +87,24 @@ export function SupportersTable({ data, onDataChange, loading }: SupportersTable
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
               {tableHeaders.map((header) => (
-                <TableHead key={header} className="font-bold text-foreground whitespace-nowrap">{header}</TableHead>
+                <TableHead key={header} className="text-center font-bold text-foreground whitespace-nowrap">{header}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((supporter) => (
               <TableRow key={supporter.voterNumber}>
-                <TableCell>{supporter.voterNumber}</TableCell>
-                <TableCell className="font-medium">{supporter.fullName}</TableCell>
-                <TableCell>{supporter.surname}</TableCell>
-                <TableCell>{supporter.age}</TableCell>
-                <TableCell>{supporter.gender}</TableCell>
-                <TableCell dir="ltr">{supporter.phoneNumber}</TableCell>
-                <TableCell>{supporter.education}</TableCell>
-                <TableCell>{supporter.registrationCenter}</TableCell>
-                <TableCell>{supporter.pollingCenter}</TableCell>
-                <TableCell>{supporter.pollingCenterNumber}</TableCell>
-                <TableCell>
+                <TableCell className="text-center">{supporter.voterNumber}</TableCell>
+                <TableCell className="text-center font-medium">{supporter.fullName}</TableCell>
+                <TableCell className="text-center">{supporter.surname}</TableCell>
+                <TableCell className="text-center">{supporter.age}</TableCell>
+                <TableCell className="text-center">{supporter.gender}</TableCell>
+                <TableCell dir="ltr" className="text-center">{supporter.phoneNumber}</TableCell>
+                <TableCell className="text-center">{supporter.education}</TableCell>
+                <TableCell className="text-center">{supporter.registrationCenter}</TableCell>
+                <TableCell className="text-center">{supporter.pollingCenter}</TableCell>
+                <TableCell className="text-center">{supporter.pollingCenterNumber}</TableCell>
+                <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
