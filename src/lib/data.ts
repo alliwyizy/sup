@@ -1,5 +1,20 @@
 
 
+// =================================================================
+// ملاحظة هامة للمطور:
+// هذا الملف يستخدم حاليًا بيانات وهمية (mock data) لأغراض التطوير والمحاكاة.
+// في بيئة الإنتاج الحقيقية، يجب استبدال هذا المنطق باتصال بقاعدة بيانات سحابية
+// مثل Google Cloud Firestore لضمان تخزين البيانات بشكل دائم وآمن.
+//
+// الخطوات المقترحة للانتقال إلى Firestore:
+// 1. إعداد مشروع Firebase وتفعيل Firestore.
+// 2. استخدام Firebase Admin SDK في بيئة الخادم (Server Actions) للتفاعل مع قاعدة البيانات.
+// 3. استبدال الدوال أدناه (مثل getAllSupporters, addSupporter) بدوال تقوم بالاستعلام
+//    والتعديل على مستندات Firestore.
+// 4. تأمين الوصول إلى قاعدة البيانات باستخدام Firebase Security Rules.
+// =================================================================
+
+
 export interface BaseVoter {
   voterNumber: string;
   fullName: string;
@@ -30,7 +45,10 @@ export interface Referrer {
     password: string; 
 }
 
-// This is the new comprehensive voter database
+// #region Mock Data (بيانات وهمية للتطوير)
+// يجب استبدال هذه المصفوفات بقاعدة بيانات Firestore في الإنتاج
+
+// قاعدة البيانات العامة للناخبين (مثال)
 const allVoters: BaseVoter[] = [
     { voterNumber: '19850101', fullName: 'أحمد محمد علي', surname: 'المحمد', birthYear: 1985, gender: 'ذكر' },
     { voterNumber: '19920515', fullName: 'فاطمة عبدالله حسين', surname: 'علي', birthYear: 1992, gender: 'انثى' },
@@ -42,7 +60,6 @@ const allVoters: BaseVoter[] = [
 ];
 
 
-// Initial mock data
 let referrers: Referrer[] = [
     { id: '1', name: 'Admin', password: 'password' },
     { id: '2', name: 'عمر علي', password: 'password123' },
@@ -96,23 +113,26 @@ let joinRequests: JoinRequest[] = [
     pollingCenterNumber: '101010',
   },
 ];
+// #endregion Mock Data
 
-// New function to search the main voter DB
+
+// #region Data Access Functions (محاكاة دوال الوصول للبيانات)
+
+// دالة للبحث في قاعدة البيانات العامة للناخبين
 export async function findVoterInMainDb(voterNumber: string): Promise<BaseVoter | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise(resolve => setTimeout(resolve, 300)); // محاكاة لبطء الشبكة
   return allVoters.find(v => v.voterNumber === voterNumber);
 }
 
 
-// Supporter Functions
+// دوال المؤيدين
 export async function findSupporterByVoterNumber(voterNumber: string): Promise<Supporter | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 100));
   return supporters.find(s => s.voterNumber === voterNumber);
 }
 
 export async function getAllSupporters(): Promise<Supporter[]> {
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-    // sort by name
+    await new Promise(resolve => setTimeout(resolve, 500));
     return [...supporters].sort((a, b) => a.fullName.localeCompare(b.fullName));
 }
 
@@ -148,7 +168,7 @@ export async function deleteSupporter(voterNumber: string): Promise<void> {
     supporters.splice(supporterIndex, 1);
 }
 
-// Join Request Functions
+// دوال طلبات الانضمام
 export async function getAllJoinRequests(): Promise<JoinRequest[]> {
   await new Promise(resolve => setTimeout(resolve, 500));
   return [...joinRequests];
@@ -184,7 +204,7 @@ export async function deleteJoinRequest(voterNumber: string): Promise<void> {
 }
 
 
-// Referrer Functions
+// دوال مدخلي البيانات
 export async function getAllReferrers(): Promise<Referrer[]> {
     await new Promise(resolve => setTimeout(resolve, 500));
     return [...referrers];
@@ -220,3 +240,5 @@ export async function deleteReferrer(id: string): Promise<void> {
     }
     referrers.splice(index, 1);
 }
+
+// #endregion Data Access Functions
