@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 
 const initialState: FormState = {
@@ -78,12 +79,15 @@ export default function JoinPage() {
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center p-4 bg-muted/40">
-         <Button asChild variant="ghost" className="absolute right-4 top-4 md:right-8 md:top-8">
-          <Link href="/">
-              <ArrowRight className="ml-2 h-4 w-4" />
-              العودة للرئيسية
-          </Link>
-        </Button>
+         <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-4">
+            <ThemeToggle />
+            <Button asChild variant="ghost">
+                <Link href="/">
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                    العودة للرئيسية
+                </Link>
+            </Button>
+        </div>
       <div className="w-full max-w-2xl py-8">
       <Card className="border-0 shadow-lg">
         <CardHeader className="text-center">
@@ -108,7 +112,7 @@ export default function JoinPage() {
                 </Alert>
             )}
              {state?.message && (
-                <Alert variant="default" className="border-green-500 bg-green-50 text-green-800 mb-4">
+                <Alert variant="default" className="border-green-500 bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
                     <AlertTitle>تم الإرسال بنجاح!</AlertTitle>
                     <AlertDescription>{state.message}</AlertDescription>
                 </Alert>

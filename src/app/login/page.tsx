@@ -10,16 +10,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { ShieldCheck } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen w-full items-center justify-center p-4 bg-muted/40">
-       <Button asChild variant="ghost" className="absolute right-4 top-4 md:right-8 md:top-8">
-          <Link href="/">
-              <ArrowRight className="ml-2 h-4 w-4" />
-              العودة للرئيسية
-          </Link>
-        </Button>
+       <div className="absolute right-4 top-4 md:right-8 md:top-8 flex items-center gap-4">
+          <ThemeToggle />
+          <Button asChild variant="ghost">
+            <Link href="/">
+                <ArrowRight className="ml-2 h-4 w-4" />
+                العودة للرئيسية
+            </Link>
+          </Button>
+       </div>
       <div className="w-full max-w-md">
         <Card className="shadow-lg border-0">
            <CardHeader className="text-center">

@@ -84,13 +84,13 @@ export function SearchForm() {
       )}
 
       {state.data && (
-        <Alert variant="default" className="border-green-600 text-green-800">
+        <Alert variant="default" className="border-green-600 text-green-800 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
           <CheckCircle className="h-4 w-4 !text-green-600" />
           <AlertTitle className="font-bold">تم العثور على البيانات</AlertTitle>
           <AlertDescription>
             {state.message}
           </AlertDescription>
-           <Card className="mt-4 border-green-200">
+           <Card className="mt-4 border-green-200 bg-white dark:bg-card">
                 <CardContent className="space-y-4 text-sm p-4 text-foreground">
                     <div className="flex items-center justify-between border-b pb-2">
                         <span className="font-medium text-muted-foreground">رقم الناخب</span>

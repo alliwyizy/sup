@@ -13,6 +13,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { getAllJoinRequests } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -97,6 +98,7 @@ export default function FindVoterPage() {
               العودة للرئيسية
             </Link>
           </Button>
+          <ThemeToggle />
         </div>
       </header>
       <main className="flex flex-1 flex-col items-center justify-center gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

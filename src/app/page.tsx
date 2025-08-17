@@ -1,8 +1,10 @@
 
+
 import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { LogIn, UserPlus } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function Home() {
   return (
@@ -14,6 +16,7 @@ export default function Home() {
             دخول المدير
           </Link>
         </Button>
+        <ThemeToggle />
       </div>
 
       <div className="w-full max-w-md">

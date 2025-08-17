@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Plus, LogOut, Mail, Users, BarChart as BarChartIcon, UserCog } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchParams } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type EducationDistribution = { name: string; total: number };
 type GenderDistribution = { name: string; value: number };
@@ -136,6 +137,7 @@ export default function StatsPage() {
               العودة للرئيسية
             </Link>
           </Button>
+          <ThemeToggle />
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
