@@ -16,6 +16,7 @@ import {
   deleteReferrer as deleteReferrerInDb,
   findReferrerByName,
   findVoterInMainDb,
+  type AuditStatus,
 } from "@/lib/data"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation";
@@ -33,6 +34,7 @@ const SupporterSchema = z.object({
     pollingCenter: z.string().min(1, { message: "اسم مركز الاقتراع مطلوب." }),
     pollingCenterNumber: z.string().regex(/^\d{6}$/, { message: "رقم مركز الاقتراع يجب أن يتكون من 6 أرقام." }),
     referrerName: z.string().min(1, { message: "يجب اختيار مدخل البيانات." }),
+    auditStatus: z.enum(['لم يتم التدقيق', 'تم التدقيق', 'مشكلة في التدقيق']),
 });
 
 const ReferrerSchema = z.object({
@@ -162,7 +164,8 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
 }
 
 export async function addSupporter(prevState: FormState, formData: FormData): Promise<FormState> {
-  const validatedFields = SupporterSchema.safeParse(Object.fromEntries(formData.entries()));
+  // We omit auditStatus because we want to set it programmatically
+  const validatedFields = SupporterSchema.omit({ auditStatus: true }).safeParse(Object.fromEntries(formData.entries()));
   
   if (!validatedFields.success) {
     const errors = validatedFields.error.flatten().fieldErrors;
@@ -223,7 +226,7 @@ export async function deleteSupporter(voterNumber: string): Promise<FormState> {
 
 
 export async function submitJoinRequest(prevState: FormState, formData: FormData): Promise<FormState> {
-  const validatedFields = SupporterSchema.omit({ referrerName: true }).safeParse(Object.fromEntries(formData.entries()));
+  const validatedFields = SupporterSchema.omit({ referrerName: true, auditStatus: true }).safeParse(Object.fromEntries(formData.entries()));
 
   if (!validatedFields.success) {
     const errors = validatedFields.error.flatten().fieldErrors;

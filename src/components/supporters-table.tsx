@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Supporter } from "@/lib/data";
+import type { Supporter, AuditStatus } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ import { DeleteSupporterDialog } from "./delete-supporter-dialog";
 import { Skeleton } from "./ui/skeleton";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Badge } from "./ui/badge";
 
 interface SupportersTableProps {
   data: Supporter[];
@@ -39,6 +40,7 @@ interface SupportersTableProps {
 const PAGE_SIZE = 50;
 const educationLevels = ['الكل', 'امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'];
 const genderLevels = ['الكل', 'ذكر', 'انثى'];
+const auditStatuses: (AuditStatus | 'الكل')[] = ['الكل', 'لم يتم التدقيق', 'تم التدقيق', 'مشكلة في التدقيق'];
 
 export function SupportersTable({ data, onDataChange, loading, isAdmin }: SupportersTableProps) {
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
@@ -47,7 +49,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   
   const [localData, setLocalData] = React.useState(data);
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل' });
+  const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل', auditStatus: 'الكل' });
   const [currentPage, setCurrentPage] = React.useState(1);
 
   React.useEffect(() => {
@@ -78,7 +80,8 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
       })
       .filter(supporter => 
         (filters.education === 'الكل' || supporter.education === filters.education) &&
-        (filters.gender === 'الكل' || supporter.gender === filters.gender)
+        (filters.gender === 'الكل' || supporter.gender === filters.gender) &&
+        (filters.auditStatus === 'الكل' || supporter.auditStatus === filters.auditStatus)
       );
   }, [localData, searchTerm, filters]);
 
@@ -89,7 +92,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
 
-  const handleFilterChange = (filterName: 'education' | 'gender') => (value: string) => {
+  const handleFilterChange = (filterName: 'education' | 'gender' | 'auditStatus') => (value: string) => {
       setFilters(prev => ({ ...prev, [filterName]: value }));
   };
   
@@ -111,6 +114,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
         'الجنس': s.gender,
         'رقم الهاتف': s.phoneNumber,
         'التحصيل الدراسي': s.education,
+        'حالة التدقيق': s.auditStatus,
         'مركز التسجيل': s.registrationCenter,
         'مركز الاقتراع': s.pollingCenter,
         'رقم المركز': s.pollingCenterNumber,
@@ -122,10 +126,19 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
     xlsx.writeFile(workbook, "supporters_data.xlsx");
   };
 
+  const getAuditStatusVariant = (status: AuditStatus): "default" | "secondary" | "destructive" => {
+    switch(status) {
+        case 'تم التدقيق': return 'default';
+        case 'مشكلة في التدقيق': return 'destructive';
+        case 'لم يتم التدقيق': return 'secondary';
+        default: return 'secondary';
+    }
+  }
+
 
   const tableHeadersBase = [
     "رقم الناخب", "الاسم الكامل", "اللقب", "العمر", "الجنس", "رقم الهاتف", 
-    "التحصيل الدراسي", "مركز التسجيل", "مركز الاقتراع", "رقم المركز"
+    "التحصيل الدراسي", "حالة التدقيق", "مركز التسجيل", "مركز الاقتراع", "رقم المركز"
   ];
   
   const tableHeaders = isAdmin 
@@ -181,7 +194,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 </Button>
             )}
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex-1 space-y-2">
                 <label className="text-sm font-medium">تصفية حسب التحصيل الدراسي:</label>
                  <Select onValueChange={handleFilterChange('education')} defaultValue="الكل">
@@ -200,6 +213,17 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                     </SelectContent>
                 </Select>
             </div>
+            {isAdmin && (
+                 <div className="flex-1 space-y-2">
+                    <label className="text-sm font-medium">تصفية حسب حالة التدقيق:</label>
+                    <Select onValueChange={handleFilterChange('auditStatus')} defaultValue="الكل">
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {auditStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
         </div>
       </div>
 
@@ -222,6 +246,9 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 <TableCell className="text-center">{supporter.gender}</TableCell>
                 <TableCell dir="ltr" className="text-center">{supporter.phoneNumber}</TableCell>
                 <TableCell className="text-center">{supporter.education}</TableCell>
+                <TableCell className="text-center">
+                    <Badge variant={getAuditStatusVariant(supporter.auditStatus)}>{supporter.auditStatus}</Badge>
+                </TableCell>
                 <TableCell className="text-center">{supporter.registrationCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenter}</TableCell>
                 <TableCell className="text-center">{supporter.pollingCenterNumber}</TableCell>

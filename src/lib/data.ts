@@ -8,6 +8,7 @@ export interface BaseVoter {
   gender: 'ذكر' | 'انثى';
 }
 
+export type AuditStatus = 'لم يتم التدقيق' | 'تم التدقيق' | 'مشكلة في التدقيق';
 
 export interface Supporter extends BaseVoter {
   age: number;
@@ -17,9 +18,10 @@ export interface Supporter extends BaseVoter {
   pollingCenter: string;
   pollingCenterNumber: string;
   referrerName: string; 
+  auditStatus: AuditStatus;
 }
 
-export type JoinRequest = Omit<Supporter, 'age' | 'referrerName'>;
+export type JoinRequest = Omit<Supporter, 'age' | 'referrerName' | 'auditStatus'>;
 
 export interface Referrer {
     id: string;
@@ -61,6 +63,7 @@ let supporters: Supporter[] = [
     pollingCenter: 'مدرسة الرشيد الابتدائية',
     pollingCenterNumber: '123456',
     referrerName: 'Admin',
+    auditStatus: 'تم التدقيق',
   },
   {
     voterNumber: '19920515',
@@ -75,6 +78,7 @@ let supporters: Supporter[] = [
     pollingCenter: 'إعدادية الفرات للبنات',
     pollingCenterNumber: '654321',
     referrerName: 'عمر علي',
+    auditStatus: 'لم يتم التدقيق',
   },
 ];
 
@@ -112,13 +116,13 @@ export async function getAllSupporters(): Promise<Supporter[]> {
     return [...supporters].sort((a, b) => a.fullName.localeCompare(b.fullName));
 }
 
-export async function addSupporter(supporter: Omit<Supporter, 'age'>): Promise<Supporter> {
+export async function addSupporter(supporter: Omit<Supporter, 'age' | 'auditStatus'>): Promise<Supporter> {
   await new Promise(resolve => setTimeout(resolve, 500));
   if (supporters.find(s => s.voterNumber === supporter.voterNumber)) {
     throw new Error("هذا المؤيد موجود بالفعل.");
   }
   const age = new Date().getFullYear() - supporter.birthYear;
-  const newSupporter = { ...supporter, age };
+  const newSupporter: Supporter = { ...supporter, age, auditStatus: 'لم يتم التدقيق' };
   supporters.push(newSupporter);
   return newSupporter;
 }
@@ -161,7 +165,7 @@ export async function getJoinRequest(voterNumber: string): Promise<JoinRequest |
   return joinRequests.find(r => r.voterNumber === voterNumber);
 }
 
-export async function addJoinRequest(request: JoinRequest): Promise<JoinRequest> {
+export async function addJoinRequest(request: Omit<JoinRequest, 'auditStatus'>): Promise<JoinRequest> {
   await new Promise(resolve => setTimeout(resolve, 500));
   if (joinRequests.find(r => r.voterNumber === request.voterNumber)) {
     throw new Error("لديك طلب انضمام معلق بالفعل.");

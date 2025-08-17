@@ -8,7 +8,7 @@ import { Loader2, Save } from "lucide-react";
 import * as React from "react";
 
 import { updateSupporter, type FormState } from "@/lib/actions";
-import type { Supporter, Referrer } from "@/lib/data";
+import type { Supporter, Referrer, AuditStatus } from "@/lib/data";
 import { getAllReferrers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,7 @@ interface EditSupporterFormProps {
 }
 
 const educationLevels = ['امي', 'يقرا ويكتب', 'ابتدائية', 'متوسطة', 'اعدادية', 'طالب جامعة', 'دبلوم', 'بكالوريوس', 'ماجستير', 'دكتوراة'];
+const auditStatuses: AuditStatus[] = ['لم يتم التدقيق', 'تم التدقيق', 'مشكلة في التدقيق'];
 
 export function EditSupporterForm({
   supporter,
@@ -106,6 +107,7 @@ export function EditSupporterForm({
           </DialogDescription>
         </DialogHeader>
         <form action={formAction} className="space-y-4 py-4">
+          <input type="hidden" name="auditStatus" defaultValue={supporter.auditStatus} />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="voterNumber-edit">رقم الناخب</Label>
@@ -182,9 +184,22 @@ export function EditSupporterForm({
                 <Label htmlFor="pollingCenter-edit">اسم مركز الاقتراع</Label>
                 <Input id="pollingCenter-edit" name="pollingCenter" defaultValue={supporter.pollingCenter} required className="text-right" />
             </div>
-             <div className="space-y-2 md:col-span-2">
+             <div className="space-y-2">
                 <Label htmlFor="pollingCenterNumber-edit">رقم مركز الاقتراع</Label>
                 <Input id="pollingCenterNumber-edit" name="pollingCenterNumber" defaultValue={supporter.pollingCenterNumber} required className="text-right" maxLength={6} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="auditStatus-edit">حالة التدقيق</Label>
+                 <Select name="auditStatus" required defaultValue={supporter.auditStatus}>
+                    <SelectTrigger id="auditStatus-edit">
+                        <SelectValue placeholder="اختر حالة التدقيق" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {auditStatuses.map(status => (
+                            <SelectItem key={status} value={status}>{status}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
           </div>
           <DialogFooter>
