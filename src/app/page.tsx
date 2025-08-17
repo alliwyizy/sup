@@ -1,3 +1,4 @@
+
 import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -37,7 +38,7 @@ export default function Home() {
               </div>
             </div>
              <Button asChild variant="secondary" size="lg">
-                <Link href="/join">
+                <Link href="/find-voter">
                     <UserPlus className="ml-2 h-4 w-4"/>
                     الانضمام كمؤيد جديد
                 </Link>

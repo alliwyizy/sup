@@ -320,8 +320,9 @@ export async function findVoter(formData: FormData) {
 
 
   if (!validatedFields.success) {
-    // This should be handled client-side, but as a fallback
-    return redirect(source === 'admin' ? '/admin/find-voter?error=invalid' : '/find-voter?error=invalid');
+    const redirectUrl = source === 'admin' ? '/admin/find-voter?error=invalid' : '/find-voter?error=invalid';
+    const finalUrl = referrerName ? `${redirectUrl}&ref=${referrerName}` : redirectUrl;
+    return redirect(finalUrl);
   }
 
   const { voterNumber } = validatedFields.data;
@@ -330,7 +331,8 @@ export async function findVoter(formData: FormData) {
   const existingSupporter = await findSupporterByVoterNumber(voterNumber);
   if (existingSupporter) {
       const redirectUrl = source === 'admin' ? `/admin/find-voter?error=exists` : `/find-voter?error=exists`;
-      return redirect(referrerName ? `${redirectUrl}&ref=${referrerName}` : redirectUrl);
+      const finalUrl = referrerName ? `${redirectUrl}&ref=${referrerName}` : redirectUrl;
+      return redirect(finalUrl);
   }
 
 
