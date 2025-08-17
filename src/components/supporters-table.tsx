@@ -48,8 +48,23 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   const [selectedSupporter, setSelectedSupporter] = React.useState<Supporter | null>(null);
   
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [filters, setFilters] = React.useState({ education: 'الكل', gender: 'الكل', auditStatus: 'الكل' });
+  const [filters, setFilters] = React.useState({ 
+    education: 'الكل', 
+    gender: 'الكل', 
+    auditStatus: 'الكل',
+    pollingCenter: 'الكل',
+    referrerName: 'الكل',
+    registrationCenter: 'الكل',
+  });
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  // Memoize filter options
+  const filterOptions = React.useMemo(() => {
+    const pollingCenters = ['الكل', ...new Set(data.map(s => s.pollingCenter))];
+    const referrerNames = ['الكل', ...new Set(data.map(s => s.referrerName))];
+    const registrationCenters = ['الكل', ...new Set(data.map(s => s.registrationCenter))];
+    return { pollingCenters, referrerNames, registrationCenters };
+  }, [data]);
   
   const filteredData = React.useMemo(() => {
     let filtered = data;
@@ -68,8 +83,19 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
     if (filters.gender !== 'الكل') {
       filtered = filtered.filter(supporter => supporter.gender === filters.gender);
     }
-    if (isAdmin && filters.auditStatus !== 'الكل') {
-        filtered = filtered.filter(supporter => supporter.auditStatus === filters.auditStatus);
+     if (filters.pollingCenter !== 'الكل') {
+      filtered = filtered.filter(supporter => supporter.pollingCenter === filters.pollingCenter);
+    }
+    if (filters.registrationCenter !== 'الكل') {
+        filtered = filtered.filter(supporter => supporter.registrationCenter === filters.registrationCenter);
+    }
+    if (isAdmin) {
+        if (filters.auditStatus !== 'الكل') {
+            filtered = filtered.filter(supporter => supporter.auditStatus === filters.auditStatus);
+        }
+        if (filters.referrerName !== 'الكل') {
+            filtered = filtered.filter(supporter => supporter.referrerName === filters.referrerName);
+        }
     }
     return filtered;
   }, [data, searchTerm, filters, isAdmin]);
@@ -85,7 +111,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
   
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
 
-  const handleFilterChange = (filterName: 'education' | 'gender' | 'auditStatus') => (value: string) => {
+  const handleFilterChange = (filterName: keyof typeof filters) => (value: string) => {
       setFilters(prev => ({ ...prev, [filterName]: value }));
   };
   
@@ -197,7 +223,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                 </Button>
             )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="flex-1 space-y-2">
                 <label className="text-sm font-medium">تصفية حسب التحصيل الدراسي:</label>
                  <Select onValueChange={handleFilterChange('education')} defaultValue="الكل">
@@ -223,6 +249,35 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                             {auditStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
+             <div className="flex-1 space-y-2">
+                <label className="text-sm font-medium">تصفية حسب مركز الاقتراع:</label>
+                <Select onValueChange={handleFilterChange('pollingCenter')} defaultValue="الكل">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {filterOptions.pollingCenters.map(center => <SelectItem key={center} value={center}>{center}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex-1 space-y-2">
+                <label className="text-sm font-medium">تصفية حسب مركز التسجيل:</label>
+                <Select onValueChange={handleFilterChange('registrationCenter')} defaultValue="الكل">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {filterOptions.registrationCenters.map(center => <SelectItem key={center} value={center}>{center}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+            {isAdmin && (
+                 <div className="flex-1 space-y-2">
+                    <label className="text-sm font-medium">تصفية حسب مدخل البيانات:</label>
+                    <Select onValueChange={handleFilterChange('referrerName')} defaultValue="الكل">
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {filterOptions.referrerNames.map(name => <SelectItem key={name} value={name}>{name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -340,5 +395,7 @@ export function SupportersTable({ data, onDataChange, loading, isAdmin }: Suppor
     </>
   );
 }
+
+    
 
     
